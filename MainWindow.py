@@ -1,23 +1,28 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem
 from PyQt5.QtGui import QPixmap, QTransform
 from PyQt5.QtCore import Qt
+from ExifWindow import Ui_Dialog
+from Model import Model
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(640, 480)
+        MainWindow.resize(873, 707)
         MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        MainWindow.setAcceptDrops(True)
-        self.rotation = 0
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
-        self.gridLayout.setObjectName("gridLayout")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.verticalLayout.setObjectName("verticalLayout")
         self.image_label = QtWidgets.QLabel(self.centralwidget)
-        self.image_label.setMinimumSize(QtCore.QSize(640, 480))
-        # self.image_label.setMaximumSize(QtCore.QSize(700, 615))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.image_label.sizePolicy().hasHeightForWidth())
+        self.image_label.setSizePolicy(sizePolicy)
+        # self.image_label.setMinimumSize(QtCore.QSize(600, 512))
+        self.image_label.setMaximumSize(QtCore.QSize(1000, 600))
         self.image_label.setAcceptDrops(True)
         self.image_label.setAutoFillBackground(False)
         self.image_label.setText("")
@@ -25,14 +30,15 @@ class Ui_MainWindow(object):
         self.image_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
         self.image_label.setWordWrap(False)
         self.image_label.setObjectName("image_label")
-        self.gridLayout.addWidget(self.image_label, 2, 0, 1, 1, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)
-        self.add_photo = QtWidgets.QPushButton(self.centralwidget)
-        self.add_photo.setMaximumSize(QtCore.QSize(100, 30))
-        self.add_photo.setObjectName("add_photo")
-        self.gridLayout.addWidget(self.add_photo, 0, 0, 1, 1)
+        self.verticalLayout.addWidget(self.image_label, 0, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+        self.table_view = QtWidgets.QTableView(self.centralwidget)
+        self.table_view.setMinimumSize(QtCore.QSize(800, 150))
+        self.table_view.setMaximumSize(QtCore.QSize(16777215, 300))
+        self.table_view.setObjectName("table_view")
+        self.verticalLayout.addWidget(self.table_view)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 722, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 873, 26))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -71,21 +77,21 @@ class Ui_MainWindow(object):
             "E:/UNIFI/Human Computer Interaction/Project Assignment/Image Viewer/icons/arrow-circle-315.png"),
             QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.cw_rotate.setIcon(icon2)
-        self.cw_rotate.setObjectName("action45_clockwise")
+        self.cw_rotate.setObjectName("cw_rotate")
         self.ccw_rotate = QtWidgets.QAction(MainWindow)
         icon3 = QtGui.QIcon()
         icon3.addPixmap(QtGui.QPixmap(
             "E:/UNIFI/Human Computer Interaction/Project Assignment/Image Viewer/icons/arrow-circle-225-left.png"),
             QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ccw_rotate.setIcon(icon3)
-        self.ccw_rotate.setObjectName("action45_counterclockwise")
-        self.actionExif = QtWidgets.QAction(MainWindow)
+        self.ccw_rotate.setObjectName("ccw_rotate")
+        self.action_exif = QtWidgets.QAction(MainWindow)
         icon4 = QtGui.QIcon()
         icon4.addPixmap(
             QtGui.QPixmap("E:/UNIFI/Human Computer Interaction/Project Assignment/Image Viewer/icons/information.png"),
             QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.actionExif.setIcon(icon4)
-        self.actionExif.setObjectName("actionExif")
+        self.action_exif.setIcon(icon4)
+        self.action_exif.setObjectName("actionExif")
         self.close_images.addAction(self.current_img)
         self.close_images.addSeparator()
         self.close_images.addAction(self.all_img)
@@ -95,7 +101,7 @@ class Ui_MainWindow(object):
         self.tools.addAction(self.cw_rotate)
         self.tools.addSeparator()
         self.tools.addAction(self.ccw_rotate)
-        self.view.addAction(self.actionExif)
+        self.view.addAction(self.action_exif)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.tools.menuAction())
         self.menubar.addAction(self.view.menuAction())
@@ -103,15 +109,15 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.action_open.triggered.connect(self.clicker)
-        self.ccw_rotate.triggered.connect(self.left_rotate)
-        self.cw_rotate.triggered.connect(self.right_rotate)
-
+        # self.action_open.triggered.connect(self.clicker)
+        # self.ccw_rotate.triggered.connect(self.left_rotate)
+        # self.cw_rotate.triggered.connect(self.right_rotate)
+        # self.current_img.triggered.connect(self.close_img)
+        # self.action_exif.triggered.connect(self.open_exif_info)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.add_photo.setText(_translate("MainWindow", "Add Photo"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.close_images.setTitle(_translate("MainWindow", "Close Image(s)"))
         self.tools.setTitle(_translate("MainWindow", "Tools"))
@@ -128,47 +134,61 @@ class Ui_MainWindow(object):
         self.all_img.setText(_translate("MainWindow", "All"))
         self.all_img.setStatusTip(_translate("MainWindow", "Close all images"))
         self.all_img.setShortcut(_translate("MainWindow", "Ctrl+Shift+W"))
-        self.cw_rotate.setText(_translate("MainWindow", "90° clockwise"))
+        self.cw_rotate.setText(_translate("MainWindow", "45° clockwise"))
         self.cw_rotate.setStatusTip(_translate("MainWindow", "Rotate the image to the right"))
         self.cw_rotate.setShortcut(_translate("MainWindow", "Ctrl+R"))
-        self.ccw_rotate.setText(_translate("MainWindow", "90° counterclockwise"))
+        self.ccw_rotate.setText(_translate("MainWindow", "45° counterclockwise"))
         self.ccw_rotate.setStatusTip(_translate("MainWindow", "Rotate the image to the left"))
         self.ccw_rotate.setShortcut(_translate("MainWindow", "Ctrl+L"))
-        self.actionExif.setText(_translate("MainWindow", "Exif info"))
-        self.actionExif.setStatusTip(_translate("MainWindow", "Get exif info"))
-        self.actionExif.setShortcut(_translate("MainWindow", "Ctrl+E"))
+        self.action_exif.setText(_translate("MainWindow", "Exif"))
+        self.action_exif.setStatusTip(_translate("MainWindow", "Get exif info"))
+        self.action_exif.setShortcut(_translate("MainWindow", "Ctrl+E"))
 
-    def clicker(self):
-        fname = QFileDialog.getOpenFileName(None, "Open File", '/home',
-                                            "jpeg images (*.jpg *.jpeg *.JPG);;All files (*.*)")
-        # open the image
-        self.pixmap = QPixmap(fname[0])
-        # add pic to label
-        self.image_label.setPixmap(self.pixmap)
-
-    def left_rotate(self):
-        if self.image_label.pixmap():
-            self.rotate = True
-            self.rotation = QTransform().rotate(-90.0)
-
-            # transform = QTransform().rotate(self.rotation)
-            self.pixmap = self.pixmap.transformed(self.rotation, Qt.SmoothTransformation)
-
-            # add pic to label
-            self.image_label.setPixmap(self.pixmap)
-            self.rotation = 0
-
-    def right_rotate(self):
-        if self.image_label.pixmap():
-            self.rotate = True
-            self.rotation = QTransform().rotate(90.0)
-
-            # transform = QTransform().rotate(self.rotation)
-            self.pixmap = self.pixmap.transformed(self.rotation, Qt.SmoothTransformation)
-
-            # add pic to label
-            self.image_label.setPixmap(self.pixmap)
-            self.rotation = 0
+    # def clicker(self):
+    #     fname = QFileDialog.getOpenFileName(None, "Open File", '/home',
+    #                                         "jpeg images (*.jpg *.jpeg *.JPG)")
+    #
+    #     # open the image
+    #     self.pixmap = QPixmap(fname[0])
+    #     w = self.pixmap.width()
+    #     h = self.pixmap.height()
+    #     # add pic to label
+    #     self.image_label.setPixmap(self.pixmap.scaled(w, h, Qt.KeepAspectRatioByExpanding))
+    #
+    # def left_rotate(self):
+    #     if self.image_label.pixmap():
+    #         self.rotate = True
+    #         self.rotation = QTransform().rotate(-90.0)
+    #
+    #         # transform = QTransform().rotate(self.rotation)
+    #         self.pixmap = self.pixmap.transformed(self.rotation, Qt.SmoothTransformation)
+    #
+    #         # add pic to label
+    #         self.image_label.setPixmap(self.pixmap)
+    #         self.rotation = 0
+    #
+    # def right_rotate(self):
+    #     if self.image_label.pixmap():
+    #         self.rotate = True
+    #         self.rotation = QTransform().rotate(90.0)
+    #
+    #         # transform = QTransform().rotate(self.rotation)
+    #         self.pixmap = self.pixmap.transformed(self.rotation, Qt.SmoothTransformation)
+    #
+    #         # add pic to label
+    #         self.image_label.setPixmap(self.pixmap)
+    #         self.rotation = 0
+    #
+    # def close_img(self):
+    #     # close image
+    #     self.image_label.setPixmap(QPixmap())
+    #
+    # def open_exif_info(self):
+    #     if self.image_label.pixmap():
+    #         self.window = QtWidgets.QMainWindow()
+    #         self.ui = Ui_Dialog()
+    #         self.ui.setupUi(self.window)
+    #         self.window.show()
 
 
 if __name__ == "__main__":

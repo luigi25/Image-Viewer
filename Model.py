@@ -15,7 +15,7 @@ class Model:
         try:
             img = Image.open(image)
             if img._getexif() is not None:
-                exif_info = img.get_exif().items()
+                exif_info = img._getexif().items()
                 exif_data = {TAGS[tag]: value for tag, value in exif_info if tag in TAGS}
                 if 'GPSInfo' in exif_data:
                     gps_data = dict()

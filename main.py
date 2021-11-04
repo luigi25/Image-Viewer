@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication
 from Model import Model
-from Viewer import Viewer
+from Viewer import ImgViewer, ExifViewer
 
 model = Model()
 
