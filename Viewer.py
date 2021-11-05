@@ -32,16 +32,54 @@ class ExifViewer(QDialog):
                 self.ui.tableWidget.setItem(len(self.exif) + r, 0, QTableWidgetItem(tag))
                 self.ui.tableWidget.setItem(len(self.exif) + r, 1, QTableWidgetItem(str(self.gps[tag])))
 
-            # lat, lon = get_exif_location(gps)
-            # url = '<a href="https://www.google.com/maps/search/?api=1&query={0},{1}"> Link to Google Maps </a>'.format(
-            #     lat, lon)
-            # print('url: {}'.format(url))
-            # self.ui.webLabel.setText(url)
+            lat, lon = self.get_exif_location(self.gps)
+            url = '<a href="https://www.google.com/maps/search/?api=1&query={0},{1}"> Link to Google Maps </a>'.format(
+                lat, lon)
+            print('url: {}'.format(url))
+            self.ui.link_maps.setText(url)
+
+            coordinate = (lat, lon)
+            m = folium.Map(title='GPS Location', zoom_start=15, location=coordinate)
+            popup = folium.Popup(f'<h4>For more info click here: {url}</h4>', max_width=len('For more info click here:')* 8)
+            folium.Marker(coordinate, popup=popup).add_to(m)
+            # save map data to data object
+            data = io.BytesIO()
+            m.save(data, close_file=False)
+            web_view = QWebEngineView()
+            web_view.setHtml(data.getvalue().decode())
+            self.ui.gridLayout_2.addWidget(web_view, 0, 0, 1, 1)
+
         else:
             self.ui.tableWidget.setRowCount(len(self.exif))
             for r, tag in enumerate(self.exif):
                 self.ui.tableWidget.setItem(r, 0, QTableWidgetItem(tag))
                 self.ui.tableWidget.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
+
+    def convert_to_degress(self, value):
+        d = float(value[0])
+        m = float(value[1])
+        s = float(value[2])
+        return d + (m / 60.0) + (s / 3600.0)
+
+    def get_exif_location(self, gpsexif):
+        lat = None
+        lon = None
+
+        gps_latitude = gpsexif['GPSLatitude']
+        gps_latitude_ref = gpsexif['GPSLatitudeRef']
+        gps_longitude = gpsexif['GPSLongitude']
+        gps_longitude_ref = gpsexif['GPSLongitudeRef']
+
+        if gps_latitude and gps_latitude_ref and gps_longitude and gps_longitude_ref:
+            lat = self.convert_to_degress(gps_latitude)
+            if gps_latitude_ref != 'N':
+                lat = 0 - lat
+
+            lon = self.convert_to_degress(gps_longitude)
+            if gps_longitude_ref != 'E':
+                lon = 0 - lon
+
+        return lat, lon
 
 
 class ImgViewer(QMainWindow):
@@ -52,6 +90,11 @@ class ImgViewer(QMainWindow):
         self.ui.setupUi(self)
 
         self.model = model
+
+        self.width = None
+        self.height = None
+        self.ratio = None
+
         self.show()
 
         self.interaction()
@@ -67,14 +110,15 @@ class ImgViewer(QMainWindow):
         self.file_name = QFileDialog.getOpenFileName(None, "Open File", '/home',
                                                      "jpeg images (*.jpg *.jpeg *.JPG)")
         min_size = 512
-        # open the image
-        self.pixmap = QPixmap(self.file_name[0])
-        width = self.pixmap.width()
-        height = self.pixmap.height()
-        ratio = width/height
-        width, height = (min_size, int(min_size / ratio)) if (width > height) else (int(ratio * min_size), min_size)
-        # add pic to label
-        self.ui.image_label.setPixmap(self.pixmap.scaled(width, height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        if self.file_name[0]:
+            # open the image
+            self.pixmap = QPixmap(self.file_name[0])
+            self.width = self.pixmap.width()
+            self.height = self.pixmap.height()
+            ratio = self.width / self.height
+            self.width, self.height = (min_size, int(min_size / ratio)) if (self.width > self.height) else (int(ratio * min_size), min_size)
+            # add pic to label
+            self.ui.image_label.setPixmap(self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def left_rotate(self):
         if self.ui.image_label.pixmap():
@@ -83,8 +127,9 @@ class ImgViewer(QMainWindow):
 
             self.pixmap = self.pixmap.transformed(self.rotation, Qt.SmoothTransformation)
 
+
             # add pic to label
-            self.ui.image_label.setPixmap(self.pixmap)
+            self.ui.image_label.setPixmap(self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.rotation = 0
 
     def right_rotate(self):
@@ -95,7 +140,7 @@ class ImgViewer(QMainWindow):
             self.pixmap = self.pixmap.transformed(self.rotation, Qt.SmoothTransformation)
 
             # add pic to label
-            self.ui.image_label.setPixmap(self.pixmap)
+            self.ui.image_label.setPixmap(self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.rotation = 0
 
     def close_img(self):
