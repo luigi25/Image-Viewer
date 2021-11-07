@@ -9,14 +9,15 @@ from Model import Model
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(873, 707)
+        MainWindow.resize(800, 600)
         # MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        MainWindow.setWindowIcon(QtGui.QIcon('icons/application-image.png'))
 
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
-        MainWindow.setMinimumSize(QtCore.QSize(1024, 600))
+        MainWindow.setMinimumSize(QtCore.QSize(800, 600))
         # self.table_view = QtWidgets.QTableView(self.centralwidget)
         # self.table_view.setMinimumSize(QtCore.QSize(800, 150))
         # self.table_view.setMaximumSize(QtCore.QSize(16777215, 300))
@@ -33,7 +34,7 @@ class Ui_MainWindow(object):
         self.image_label.setAcceptDrops(True)
         self.image_label.setAutoFillBackground(False)
         self.image_label.setText("")
-        self.image_label.setPixmap(QtGui.QPixmap("icons8-add-image-96.png"))
+        self.image_label.setPixmap(QtGui.QPixmap("icons/icons8-add-image-96.png"))
         self.image_label.setScaledContents(False)
         self.image_label.setAlignment(QtCore.Qt.AlignCenter)
         self.image_label.setWordWrap(False)
@@ -57,7 +58,7 @@ class Ui_MainWindow(object):
         self.close_images = QtWidgets.QMenu(self.menu_file)
         icon = QtGui.QIcon()
         icon.addPixmap(
-            QtGui.QPixmap("E:/UNIFI/Human Computer Interaction/Project Assignment/Image Viewer/icons/cross-script.png"),
+            QtGui.QPixmap("icons/cross-script.png"),
             QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.close_images.setIcon(icon)
         self.close_images.setObjectName("close_images")
@@ -71,8 +72,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
         self.action_open = QtWidgets.QAction(MainWindow)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(
-            QtGui.QPixmap("E:/UNIFI/Human Computer Interaction/Project Assignment/Image Viewer/icons/images.png"),
+        icon1.addPixmap(QtGui.QPixmap("icons/image.png"),
             QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_open.setIcon(icon1)
         self.action_open.setObjectName("action_open")
@@ -84,22 +84,20 @@ class Ui_MainWindow(object):
         self.all_img.setObjectName("all_img")
         self.cw_rotate = QtWidgets.QAction(MainWindow)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(
-            "E:/UNIFI/Human Computer Interaction/Project Assignment/Image Viewer/icons/arrow-circle-315.png"),
+        icon2.addPixmap(QtGui.QPixmap("icons/arrow-circle-315.png"),
             QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.cw_rotate.setIcon(icon2)
         self.cw_rotate.setObjectName("cw_rotate")
         self.ccw_rotate = QtWidgets.QAction(MainWindow)
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(
-            "E:/UNIFI/Human Computer Interaction/Project Assignment/Image Viewer/icons/arrow-circle-225-left.png"),
+        icon3.addPixmap(QtGui.QPixmap("icons/arrow-circle-225-left.png"),
             QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ccw_rotate.setIcon(icon3)
         self.ccw_rotate.setObjectName("ccw_rotate")
         self.action_exif = QtWidgets.QAction(MainWindow)
         icon4 = QtGui.QIcon()
         icon4.addPixmap(
-            QtGui.QPixmap("E:/UNIFI/Human Computer Interaction/Project Assignment/Image Viewer/icons/information.png"),
+            QtGui.QPixmap("icons/information.png"),
             QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_exif.setIcon(icon4)
         self.action_exif.setObjectName("action_exif")
@@ -122,7 +120,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Image Viewer"))
         self.menu_file.setTitle(_translate("MainWindow", "File"))
         self.text_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:16pt; font-weight:600;\">Press Ctrl+O to open an image</span></p></body></html>"))
         self.close_images.setTitle(_translate("MainWindow", "Close Image(s)"))

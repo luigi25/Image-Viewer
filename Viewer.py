@@ -8,6 +8,7 @@ from ExifWindow import Ui_Dialog
 import io
 import folium
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+import qdarkstyle
 
 
 class ExifViewer(QDialog):
@@ -93,6 +94,7 @@ class ImgViewer(QMainWindow):
         self.width = None
         self.height = None
         self.ratio = None
+        self.file_name = None
 
         self.show()
 
@@ -108,9 +110,7 @@ class ImgViewer(QMainWindow):
     def clicked_open(self):
         self.file_name = QFileDialog.getOpenFileName(None, "Open File", '/home',
                                                      "jpeg images (*.jpg *.jpeg *.JPG)")
-        self.ui.text_label.setText("")
-        # self.ui.spacer_item1.invalidate()
-        # self.ui.spacer_item.invalidate()
+        self.ui.text_label.hide()
         min_size = 512
         if self.file_name[0]:
             # open the image
@@ -119,14 +119,16 @@ class ImgViewer(QMainWindow):
             self.height = self.pixmap.height()
             ratio = self.width / self.height
             self.width, self.height = (min_size, int(min_size / ratio)) if (self.width > self.height) else (
-            int(ratio * min_size), min_size)
+                int(ratio * min_size), min_size)
             # add pic to label
             self.ui.image_label.setMinimumSize(QtCore.QSize(self.width, self.height))
             self.ui.image_label.setPixmap(
                 self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+        else:
+            self.ui.text_label.setVisible(True)
 
     def left_rotate(self):
-        if self.ui.image_label.pixmap():
+        if self.ui.text_label.isHidden():
             self.rotate = True
             self.rotation = QTransform().rotate(-90.0)
 
@@ -138,7 +140,7 @@ class ImgViewer(QMainWindow):
             self.rotation = 0
 
     def right_rotate(self):
-        if self.ui.image_label.pixmap():
+        if self.ui.text_label.isHidden():
             self.rotate = True
             self.rotation = QTransform().rotate(90.0)
 
@@ -151,12 +153,13 @@ class ImgViewer(QMainWindow):
 
     def close_img(self):
         # close image
-        self.ui.image_label.setMinimumSize(QtCore.QSize(150, 120))
-        self.ui.text_label.setText("<html><head/><body><p><span style=\" font-size:16pt; font-weight:600;\">Press Ctrl+O to open an image</span></p></body></html>")
-        self.ui.image_label.setPixmap(QtGui.QPixmap("icons8-add-image-96.png"))
+        if self.ui.text_label.isHidden():
+            self.ui.image_label.setMinimumSize(QtCore.QSize(150, 120))
+            self.ui.text_label.setVisible(True)
+            self.ui.image_label.setPixmap(QtGui.QPixmap("icons8-add-image-96.png"))
 
     def get_exif_info(self):
-        if self.ui.image_label.pixmap():
+        if self.ui.text_label.isHidden():
             exif = self.model.get_exif(self.file_name[0])
             exif_viewer = ExifViewer(exif, self)
             exif_viewer.show()
@@ -166,6 +169,8 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
+    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+
     im_viewer = ImgViewer(Model())
     im_viewer.show()
     sys.exit(app.exec_())
