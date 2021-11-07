@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QTableWidgetItem, QDialog
 from PyQt5.QtGui import QPixmap, QTransform
 from PyQt5.QtCore import Qt
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore, QtGui
 from Model import Model
 from MainWindow import Ui_MainWindow
 from ExifWindow import Ui_Dialog
@@ -40,7 +40,7 @@ class ExifViewer(QDialog):
 
             coordinate = (latitude, longitude)
             m = folium.Map(title='GPS Location', zoom_start=18, location=coordinate)
-            popup = folium.Popup(f'<h4>For more info go to {url}</h4>', max_width=len('For more info go to')* 8)
+            popup = folium.Popup(f'<h4>For more info go to {url}</h4>', max_width=len('For more info go to') * 8)
             folium.Marker(coordinate, popup=popup).add_to(m)
             # save map data to data object
             data = io.BytesIO()
@@ -57,8 +57,8 @@ class ExifViewer(QDialog):
 
     def convert_to_degress(self, value):
         d = float(value[0])
-        m = float(value[1])/60.0
-        s = float(value[2])/3600.0
+        m = float(value[1]) / 60.0
+        s = float(value[2]) / 3600.0
         return d + m + s
 
     def get_exif_location(self, gpsexif):
@@ -108,6 +108,9 @@ class ImgViewer(QMainWindow):
     def clicked_open(self):
         self.file_name = QFileDialog.getOpenFileName(None, "Open File", '/home',
                                                      "jpeg images (*.jpg *.jpeg *.JPG)")
+        self.ui.text_label.setText("")
+        # self.ui.spacer_item1.invalidate()
+        # self.ui.spacer_item.invalidate()
         min_size = 512
         if self.file_name[0]:
             # open the image
@@ -115,9 +118,12 @@ class ImgViewer(QMainWindow):
             self.width = self.pixmap.width()
             self.height = self.pixmap.height()
             ratio = self.width / self.height
-            self.width, self.height = (min_size, int(min_size / ratio)) if (self.width > self.height) else (int(ratio * min_size), min_size)
+            self.width, self.height = (min_size, int(min_size / ratio)) if (self.width > self.height) else (
+            int(ratio * min_size), min_size)
             # add pic to label
-            self.ui.image_label.setPixmap(self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.ui.image_label.setMinimumSize(QtCore.QSize(self.width, self.height))
+            self.ui.image_label.setPixmap(
+                self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
     def left_rotate(self):
         if self.ui.image_label.pixmap():
@@ -126,9 +132,9 @@ class ImgViewer(QMainWindow):
 
             self.pixmap = self.pixmap.transformed(self.rotation, Qt.SmoothTransformation)
 
-
             # add pic to label
-            self.ui.image_label.setPixmap(self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.ui.image_label.setPixmap(
+                self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.rotation = 0
 
     def right_rotate(self):
@@ -139,19 +145,21 @@ class ImgViewer(QMainWindow):
             self.pixmap = self.pixmap.transformed(self.rotation, Qt.SmoothTransformation)
 
             # add pic to label
-            self.ui.image_label.setPixmap(self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.ui.image_label.setPixmap(
+                self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.rotation = 0
 
     def close_img(self):
         # close image
-        self.ui.image_label.setPixmap(QPixmap())
+        self.ui.image_label.setMinimumSize(QtCore.QSize(150, 120))
+        self.ui.text_label.setText("<html><head/><body><p><span style=\" font-size:16pt; font-weight:600;\">Press Ctrl+O to open an image</span></p></body></html>")
+        self.ui.image_label.setPixmap(QtGui.QPixmap("icons8-add-image-96.png"))
 
     def get_exif_info(self):
         if self.ui.image_label.pixmap():
             exif = self.model.get_exif(self.file_name[0])
-            if exif:
-                exif_viewer = ExifViewer(exif, self)
-                exif_viewer.show()
+            exif_viewer = ExifViewer(exif, self)
+            exif_viewer.show()
 
 
 if __name__ == "__main__":

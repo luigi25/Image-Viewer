@@ -12,21 +12,19 @@ class Model:
         self.current_image = current_image
 
     def get_exif(self, image):
-        try:
-            img = Image.open(image)
-            if img._getexif() is not None:
-                exif_info = img._getexif().items()
-                exif_data = {TAGS[tag]: value for tag, value in exif_info if tag in TAGS}
-                if 'GPSInfo' in exif_data:
-                    gps_data = dict()
-                    for k in exif_data['GPSInfo'].keys():
-                        gps_info = GPSTAGS.get(k, k)
-                        gps_data[gps_info] = exif_data['GPSInfo'][k]
-                    exif_data['GPSInfo'] = gps_data
-                return exif_data
-        except AttributeError:
-            print('Select an image!')
-            return None
+        img = Image.open(image)
+        if img._getexif():
+            exif_info = img._getexif().items()
+            exif_data = {TAGS[tag]: value for tag, value in exif_info if tag in TAGS}
+            if 'GPSInfo' in exif_data:
+                gps_data = dict()
+                for k in exif_data['GPSInfo'].keys():
+                    gps_info = GPSTAGS.get(k, k)
+                    gps_data[gps_info] = exif_data['GPSInfo'][k]
+                exif_data['GPSInfo'] = gps_data
+            return exif_data
+        else:
+            return dict().items()
 
     def update(self, image):
         self.current_image = image
