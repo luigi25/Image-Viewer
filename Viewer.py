@@ -32,15 +32,15 @@ class ExifViewer(QDialog):
                 self.ui.tableWidget.setItem(len(self.exif) + r, 0, QTableWidgetItem(tag))
                 self.ui.tableWidget.setItem(len(self.exif) + r, 1, QTableWidgetItem(str(self.gps[tag])))
 
-            lat, lon = self.get_exif_location(self.gps)
-            url = '<a href="https://www.google.com/maps/search/?api=1&query={0},{1}"> Link to Google Maps </a>'.format(
-                lat, lon)
+            latitude, longitude = self.get_exif_location(self.gps)
+            url = '<a href="https://www.google.com/maps/search/?api=1&query={0},{1}"> Google Maps </a>'.format(
+                latitude, longitude)
             print('url: {}'.format(url))
             self.ui.link_maps.setText(url)
 
-            coordinate = (lat, lon)
-            m = folium.Map(title='GPS Location', zoom_start=15, location=coordinate)
-            popup = folium.Popup(f'<h4>For more info click here: {url}</h4>', max_width=len('For more info click here:')* 8)
+            coordinate = (latitude, longitude)
+            m = folium.Map(title='GPS Location', zoom_start=18, location=coordinate)
+            popup = folium.Popup(f'<h4>For more info go to {url}</h4>', max_width=len('For more info go to')* 8)
             folium.Marker(coordinate, popup=popup).add_to(m)
             # save map data to data object
             data = io.BytesIO()
@@ -57,13 +57,12 @@ class ExifViewer(QDialog):
 
     def convert_to_degress(self, value):
         d = float(value[0])
-        m = float(value[1])
-        s = float(value[2])
-        return d + (m / 60.0) + (s / 3600.0)
+        m = float(value[1])/60.0
+        s = float(value[2])/3600.0
+        return d + m + s
 
     def get_exif_location(self, gpsexif):
-        lat = None
-        lon = None
+        latitude, longitude = None, None
 
         gps_latitude = gpsexif['GPSLatitude']
         gps_latitude_ref = gpsexif['GPSLatitudeRef']
@@ -71,15 +70,15 @@ class ExifViewer(QDialog):
         gps_longitude_ref = gpsexif['GPSLongitudeRef']
 
         if gps_latitude and gps_latitude_ref and gps_longitude and gps_longitude_ref:
-            lat = self.convert_to_degress(gps_latitude)
+            latitude = self.convert_to_degress(gps_latitude)
             if gps_latitude_ref != 'N':
-                lat = 0 - lat
+                latitude = 0 - latitude
 
-            lon = self.convert_to_degress(gps_longitude)
+            longitude = self.convert_to_degress(gps_longitude)
             if gps_longitude_ref != 'E':
-                lon = 0 - lon
+                longitude = 0 - longitude
 
-        return lat, lon
+        return latitude, longitude
 
 
 class ImgViewer(QMainWindow):
