@@ -31,7 +31,7 @@ class Ui_MainWindow(object):
         self.image_label.setSizePolicy(sizePolicy)
         self.image_label.setMinimumSize(QtCore.QSize(150, 120))
         # self.image_label.setMaximumSize(QtCore.QSize(150, 120))
-        self.image_label.setAcceptDrops(True)
+        self.image_label.setAcceptDrops(False)
         self.image_label.setAutoFillBackground(False)
         self.image_label.setText("")
         self.image_label.setPixmap(QtGui.QPixmap("icons/icons8-add-image-96.png"))
@@ -46,7 +46,8 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.text_label, 0, 2, 1, 1)
         self.spacer_item = QtWidgets.QSpacerItem(30, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(self.spacer_item, 0, 3, 1, 1)
-        self.spacer_item1 = QtWidgets.QSpacerItem(30, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.spacer_item1 = QtWidgets.QSpacerItem(30, 20, QtWidgets.QSizePolicy.Expanding,
+                                                  QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(self.spacer_item1, 0, 0, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -73,7 +74,7 @@ class Ui_MainWindow(object):
         self.action_open = QtWidgets.QAction(MainWindow)
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap("icons/image.png"),
-            QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_open.setIcon(icon1)
         self.action_open.setObjectName("action_open")
         self.actionCurrent = QtWidgets.QAction(MainWindow)
@@ -85,13 +86,13 @@ class Ui_MainWindow(object):
         self.cw_rotate = QtWidgets.QAction(MainWindow)
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap("icons/arrow-circle-315.png"),
-            QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.cw_rotate.setIcon(icon2)
         self.cw_rotate.setObjectName("cw_rotate")
         self.ccw_rotate = QtWidgets.QAction(MainWindow)
         icon3 = QtGui.QIcon()
         icon3.addPixmap(QtGui.QPixmap("icons/arrow-circle-225-left.png"),
-            QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ccw_rotate.setIcon(icon3)
         self.ccw_rotate.setObjectName("ccw_rotate")
         self.action_exif = QtWidgets.QAction(MainWindow)
@@ -114,6 +115,10 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menu_file.menuAction())
         self.menubar.addAction(self.tools.menuAction())
         self.menubar.addAction(self.view.menuAction())
+        self.close_images.setDisabled(True)
+        self.cw_rotate.setDisabled(True)
+        self.ccw_rotate.setDisabled(True)
+        self.action_exif.setDisabled(True)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -122,14 +127,17 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Image Viewer"))
         self.menu_file.setTitle(_translate("MainWindow", "File"))
-        self.text_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:16pt; font-weight:600;\">Press Ctrl+O to open an image</span></p></body></html>"))
+        self.text_label.setText(_translate("MainWindow",
+                                           "<html><head/><body><p><span style=\" font-size:16pt; "
+                                           "font-weight:600;\">Press Ctrl+O to open an "
+                                           "image</span></p></body></html>"))
         self.close_images.setTitle(_translate("MainWindow", "Close Image(s)"))
         self.tools.setTitle(_translate("MainWindow", "Tools"))
         self.view.setTitle(_translate("MainWindow", "View"))
         self.action_open.setText(_translate("MainWindow", "Open"))
         self.action_open.setIconText(_translate("MainWindow", "Open"))
         self.action_open.setToolTip(_translate("MainWindow", "Open"))
-        self.action_open.setStatusTip(_translate("MainWindow", "Select image(s) to open"))
+        self.action_open.setStatusTip(_translate("MainWindow", "Select image to open"))
         self.action_open.setShortcut(_translate("MainWindow", "Ctrl+O"))
         self.actionCurrent.setText(_translate("MainWindow", "Current"))
         self.current_img.setText(_translate("MainWindow", "Current"))
@@ -147,7 +155,8 @@ class Ui_MainWindow(object):
         self.action_exif.setText(_translate("MainWindow", "Exif Info"))
         self.action_exif.setStatusTip(_translate("MainWindow", "Get exif info"))
         self.action_exif.setShortcut(_translate("MainWindow", "Ctrl+E"))
-
+        self.text_label.setStatusTip(
+            _translate("MainWindow", 'Go to "File" and click "Open" or Press "Ctrl+O" to open an image'))
 
 
 if __name__ == "__main__":

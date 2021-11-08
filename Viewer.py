@@ -110,10 +110,10 @@ class ImgViewer(QMainWindow):
     def clicked_open(self):
         self.file_name = QFileDialog.getOpenFileName(None, "Open File", '/home',
                                                      "jpeg images (*.jpg *.jpeg *.JPG)")
-        self.ui.text_label.hide()
         min_size = 512
         if self.file_name[0]:
             # open the image
+            self.ui.text_label.hide()
             self.pixmap = QPixmap(self.file_name[0])
             self.width = self.pixmap.width()
             self.height = self.pixmap.height()
@@ -123,12 +123,19 @@ class ImgViewer(QMainWindow):
             # add pic to label
             self.ui.image_label.setMinimumSize(QtCore.QSize(self.width, self.height))
             self.ui.image_label.setPixmap(
-                self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
-        else:
-            self.ui.text_label.setVisible(True)
+                self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            # self.ui.gridLayout.removeWidget(self.ui.text_label)
+            self.ui.ccw_rotate.setEnabled(True)
+            self.ui.cw_rotate.setEnabled(True)
+            self.ui.close_images.setEnabled(True)
+            self.ui.action_exif.setEnabled(True)
+
+        # else:
+        #     self.ui.text_label.setVisible(True)
 
     def left_rotate(self):
         if self.ui.text_label.isHidden():
+
             self.rotate = True
             self.rotation = QTransform().rotate(-90.0)
 
@@ -156,7 +163,11 @@ class ImgViewer(QMainWindow):
         if self.ui.text_label.isHidden():
             self.ui.image_label.setMinimumSize(QtCore.QSize(150, 120))
             self.ui.text_label.setVisible(True)
-            self.ui.image_label.setPixmap(QtGui.QPixmap("icons8-add-image-96.png"))
+            self.ui.image_label.setPixmap(QtGui.QPixmap("icons/icons8-add-image-96.png"))
+            self.ui.ccw_rotate.setDisabled(True)
+            self.ui.cw_rotate.setDisabled(True)
+            self.ui.close_images.setDisabled(True)
+            self.ui.action_exif.setDisabled(True)
 
     def get_exif_info(self):
         if self.ui.text_label.isHidden():
