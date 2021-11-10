@@ -9,48 +9,52 @@ from Model import Model
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
-        # MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        MainWindow.resize(700, 500)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         MainWindow.setWindowIcon(QtGui.QIcon('icons/application-image.png'))
 
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
-        MainWindow.setMinimumSize(QtCore.QSize(800, 600))
-        # self.table_view = QtWidgets.QTableView(self.centralwidget)
-        # self.table_view.setMinimumSize(QtCore.QSize(800, 150))
-        # self.table_view.setMaximumSize(QtCore.QSize(16777215, 300))
-        # self.table_view.setObjectName("table_view")
-        # self.verticalLayout.addWidget(self.table_view)
+        # spacerItem = QtWidgets.QSpacerItem(75, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        # self.gridLayout.addItem(spacerItem, 1, 2, 1, 1)
+        # spacerItem1 = QtWidgets.QSpacerItem(75, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        # self.gridLayout.addItem(spacerItem1, 1, 0, 1, 1)
+        # spacerItem2 = QtWidgets.QSpacerItem(20, 75, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        # self.gridLayout.addItem(spacerItem2, 2, 1, 1, 1)
+        # spacerItem3 = QtWidgets.QSpacerItem(20, 75, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        # self.gridLayout.addItem(spacerItem3, 0, 1, 1, 1)
+        MainWindow.setMinimumSize(QtCore.QSize(700, 500))
         self.image_label = QtWidgets.QLabel(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.image_label.sizePolicy().hasHeightForWidth())
         self.image_label.setSizePolicy(sizePolicy)
-        self.image_label.setMinimumSize(QtCore.QSize(150, 120))
+        #self.image_label.setMinimumSize(QtCore.QSize(550, 100))
+        #self.image_label.setMaximumSize(QtCore.QSize(550, 100))
         # self.image_label.setMaximumSize(QtCore.QSize(150, 120))
         self.image_label.setAcceptDrops(False)
         self.image_label.setAutoFillBackground(False)
         self.image_label.setText("")
-        self.image_label.setPixmap(QtGui.QPixmap("icons/icons8-add-image-96.png"))
+        self.image_label.setPixmap(QtGui.QPixmap("icons/add_img.png"))
         self.image_label.setScaledContents(False)
         self.image_label.setAlignment(QtCore.Qt.AlignCenter)
         self.image_label.setWordWrap(False)
         self.image_label.setObjectName("image_label")
-        self.gridLayout.addWidget(self.image_label, 0, 1, 1, 1, QtCore.Qt.AlignLeft)
-        self.text_label = QtWidgets.QLabel(self.centralwidget)
-        self.text_label.setScaledContents(False)
-        self.text_label.setObjectName("text_label")
-        self.gridLayout.addWidget(self.text_label, 0, 2, 1, 1)
-        self.spacer_item = QtWidgets.QSpacerItem(30, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(self.spacer_item, 0, 3, 1, 1)
-        self.spacer_item1 = QtWidgets.QSpacerItem(30, 20, QtWidgets.QSizePolicy.Expanding,
-                                                  QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(self.spacer_item1, 0, 0, 1, 1)
-
+        self.gridLayout.addWidget(self.image_label, 1, 1, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
+        # self.text_label = QtWidgets.QLabel(self.centralwidget)
+        # self.text_label.setScaledContents(False)
+        # self.text_label.setObjectName("text_label")
+        # self.gridLayout.addWidget(self.text_label, 0, 2, 1, 1)
+        # self.spacer_item = QtWidgets.QSpacerItem(30, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        # self.gridLayout.addItem(self.spacer_item, 0, 3, 1, 1)
+        # self.spacer_item1 = QtWidgets.QSpacerItem(30, 20, QtWidgets.QSizePolicy.Expanding,
+        #                                           QtWidgets.QSizePolicy.Minimum)
+        # self.gridLayout.addItem(self.spacer_item1, 0, 0, 1, 1)
+        #
+        # MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 873, 26))
         self.menubar.setObjectName("menubar")
@@ -123,14 +127,11 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Image Viewer"))
         self.menu_file.setTitle(_translate("MainWindow", "File"))
-        self.text_label.setText(_translate("MainWindow",
-                                           "<html><head/><body><p><span style=\" font-size:16pt; "
-                                           "font-weight:600;\">Press Ctrl+O to open an "
-                                           "image</span></p></body></html>"))
         self.close_images.setTitle(_translate("MainWindow", "Close Image(s)"))
         self.tools.setTitle(_translate("MainWindow", "Tools"))
         self.view.setTitle(_translate("MainWindow", "View"))
@@ -155,7 +156,7 @@ class Ui_MainWindow(object):
         self.action_exif.setText(_translate("MainWindow", "Exif Info"))
         self.action_exif.setStatusTip(_translate("MainWindow", "Get exif info"))
         self.action_exif.setShortcut(_translate("MainWindow", "Ctrl+E"))
-        self.text_label.setStatusTip(
+        self.image_label.setStatusTip(
             _translate("MainWindow", 'Go to "File" and click "Open" or Press "Ctrl+O" to open an image'))
 
 

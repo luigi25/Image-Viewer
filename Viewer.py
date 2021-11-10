@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QFileDialog, QMainWindow, QTableWidgetItem, QDialog
+from PyQt5.QtWidgets import QFileDialog, QMainWindow, QTableWidgetItem, QDialog, QMessageBox
 from PyQt5.QtGui import QPixmap, QTransform
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5 import QtWidgets, QtCore, QtGui
 from Model import Model
 from MainWindow import Ui_MainWindow
@@ -91,10 +91,11 @@ class ImgViewer(QMainWindow):
 
         self.model = model
 
-        self.width = None
-        self.height = None
+        # self.width = None
+        # self.height = None
         self.ratio = None
         self.file_name = None
+        self.pixmap = None
 
         self.show()
 
@@ -110,67 +111,74 @@ class ImgViewer(QMainWindow):
     def clicked_open(self):
         self.file_name = QFileDialog.getOpenFileName(None, "Open File", '/home',
                                                      "jpeg images (*.jpg *.jpeg *.JPG)")
-        min_size = 512
         if self.file_name[0]:
             # open the image
-            self.ui.text_label.hide()
             self.pixmap = QPixmap(self.file_name[0])
-            self.width = self.pixmap.width()
-            self.height = self.pixmap.height()
-            ratio = self.width / self.height
-            self.width, self.height = (min_size, int(min_size / ratio)) if (self.width > self.height) else (
-                int(ratio * min_size), min_size)
-            # add pic to label
-            self.ui.image_label.setMinimumSize(QtCore.QSize(self.width, self.height))
-            self.ui.image_label.setPixmap(
-                self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-            # self.ui.gridLayout.removeWidget(self.ui.text_label)
+
+            self.size_img(self.pixmap.width(), self.pixmap.height())
+
             self.ui.ccw_rotate.setEnabled(True)
             self.ui.cw_rotate.setEnabled(True)
             self.ui.close_images.setEnabled(True)
             self.ui.action_exif.setEnabled(True)
 
-        # else:
-        #     self.ui.text_label.setVisible(True)
+        else:
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle('Selection Error')
+            msg_box.setWindowIcon(QtGui.QIcon('icons/exclamation.png'))
+            msg_box.setText("No images have been selected")
+            msg_box.exec_()
+
+
+    def size_img(self, width, height):
+        min_size = 512
+        if width > height:
+            self.ui.image_label.setPixmap(
+                self.pixmap.scaled(QSize(self.ui.image_label.width(), min(self.ui.image_label.height(), min_size)),
+                                   Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        else:
+            self.ui.image_label.setPixmap(
+                self.pixmap.scaled(QSize(min(self.ui.image_label.width(), min_size), self.ui.image_label.height()),
+                                   Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
+    def resizeEvent(self, ev):
+        if self.file_name and self.pixmap:
+            self.size_img(self.pixmap.width(), self.pixmap.height())
+        super().resizeEvent(ev)
 
     def left_rotate(self):
-        if self.ui.text_label.isHidden():
-
+        if self.file_name:
             self.rotate = True
             self.rotation = QTransform().rotate(-90.0)
 
             self.pixmap = self.pixmap.transformed(self.rotation, Qt.SmoothTransformation)
+            self.size_img(self.pixmap.width(), self.pixmap.height())
 
-            # add pic to label
-            self.ui.image_label.setPixmap(
-                self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.rotation = 0
 
     def right_rotate(self):
-        if self.ui.text_label.isHidden():
+        if self.file_name:
             self.rotate = True
             self.rotation = QTransform().rotate(90.0)
 
             self.pixmap = self.pixmap.transformed(self.rotation, Qt.SmoothTransformation)
+            self.size_img(self.pixmap.width(), self.pixmap.height())
 
-            # add pic to label
-            self.ui.image_label.setPixmap(
-                self.pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.rotation = 0
 
     def close_img(self):
         # close image
-        if self.ui.text_label.isHidden():
-            self.ui.image_label.setMinimumSize(QtCore.QSize(150, 120))
-            self.ui.text_label.setVisible(True)
-            self.ui.image_label.setPixmap(QtGui.QPixmap("icons/icons8-add-image-96.png"))
+        if self.file_name:
+            self.file_name = None
+            self.ui.image_label.setPixmap(QtGui.QPixmap("icons/add_img.PNG"))
             self.ui.ccw_rotate.setDisabled(True)
             self.ui.cw_rotate.setDisabled(True)
             self.ui.close_images.setDisabled(True)
             self.ui.action_exif.setDisabled(True)
 
     def get_exif_info(self):
-        if self.ui.text_label.isHidden():
+        if self.file_name:
             exif = self.model.get_exif(self.file_name[0])
             exif_viewer = ExifViewer(exif, self)
             exif_viewer.show()
