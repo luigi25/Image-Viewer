@@ -106,7 +106,7 @@ class ImgViewer(QMainWindow):
         self.ui.ccw_rotate.triggered.connect(self.left_rotate)
         self.ui.cw_rotate.triggered.connect(self.right_rotate)
         self.ui.current_img.triggered.connect(self.close_img)
-        self.ui.action_exif.triggered.connect(lambda: self.get_exif_info())
+        self.ui.action_exif.triggered.connect(self.get_exif_info)
 
     def clicked_open(self):
         self.file_name = QFileDialog.getOpenFileName(None, "Open File", '/home',
