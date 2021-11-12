@@ -19,7 +19,7 @@ class Ui_Dialog(object):
         sizePolicy.setHeightForWidth(Dialog.sizePolicy().hasHeightForWidth())
         Dialog.setSizePolicy(sizePolicy)
         Dialog.setMinimumSize(QtCore.QSize(850, 650))
-        Dialog.setWindowIcon(QtGui.QIcon('table.png'))
+        Dialog.setWindowIcon(QtGui.QIcon('icons/table.png'))
         self.gridLayout = QtWidgets.QGridLayout(Dialog)
         self.gridLayout.setObjectName("gridLayout")
         self.tabWidget = QtWidgets.QTabWidget(Dialog)

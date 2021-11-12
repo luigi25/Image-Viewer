@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem
 from PyQt5.QtGui import QPixmap, QTransform
 from PyQt5.QtCore import Qt
-from ExifWindow import Ui_Dialog
+from ExifWindowUI import Ui_Dialog
 from Model import Model
 
 
@@ -31,9 +31,6 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.image_label.sizePolicy().hasHeightForWidth())
         self.image_label.setSizePolicy(sizePolicy)
-        #self.image_label.setMinimumSize(QtCore.QSize(550, 100))
-        #self.image_label.setMaximumSize(QtCore.QSize(550, 100))
-        # self.image_label.setMaximumSize(QtCore.QSize(150, 120))
         self.image_label.setAcceptDrops(False)
         self.image_label.setAutoFillBackground(False)
         self.image_label.setText("")
@@ -44,17 +41,6 @@ class Ui_MainWindow(object):
         self.image_label.setObjectName("image_label")
         self.gridLayout.addWidget(self.image_label, 1, 1, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
-        # self.text_label = QtWidgets.QLabel(self.centralwidget)
-        # self.text_label.setScaledContents(False)
-        # self.text_label.setObjectName("text_label")
-        # self.gridLayout.addWidget(self.text_label, 0, 2, 1, 1)
-        # self.spacer_item = QtWidgets.QSpacerItem(30, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        # self.gridLayout.addItem(self.spacer_item, 0, 3, 1, 1)
-        # self.spacer_item1 = QtWidgets.QSpacerItem(30, 20, QtWidgets.QSizePolicy.Expanding,
-        #                                           QtWidgets.QSizePolicy.Minimum)
-        # self.gridLayout.addItem(self.spacer_item1, 0, 0, 1, 1)
-        #
-        # MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 873, 26))
         self.menubar.setObjectName("menubar")

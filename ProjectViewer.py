@@ -1,14 +1,15 @@
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QTableWidgetItem, QDialog, QMessageBox
 from PyQt5.QtGui import QPixmap, QTransform
 from PyQt5.QtCore import Qt, QSize
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets, QtGui, QtCore
 from Model import Model
-from MainWindow import Ui_MainWindow
-from ExifWindow import Ui_Dialog
+from ImageWindowUI import Ui_MainWindow
+from ExifWindowUI import Ui_Dialog
 import io
 import folium
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import qdarkstyle
+from gps_utils import gps_view
 
 
 class ExifViewer(QDialog):
@@ -17,69 +18,29 @@ class ExifViewer(QDialog):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
         self.exif = exif
-        self.populate_table()
-        self.file_name = None
-        self.gps = None
+        self.fill_table()
 
-    def populate_table(self):
-        self.gps = self.exif.pop('GPSInfo') if ('GPSInfo' in self.exif) else None
-        if self.gps:
-            self.ui.tableWidget.setRowCount(len(self.exif) + len(self.gps))
+    def fill_table(self):
+        gps = self.exif.pop('GPSInfo') if ('GPSInfo' in self.exif) else None
+        if gps:
+            self.ui.tableWidget.setRowCount(len(self.exif) + len(gps))
             for r, tag in enumerate(self.exif):
                 self.ui.tableWidget.setItem(r, 0, QTableWidgetItem(tag))
                 self.ui.tableWidget.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
 
-            for r, tag in enumerate(self.gps):
+            for r, tag in enumerate(gps):
                 self.ui.tableWidget.setItem(len(self.exif) + r, 0, QTableWidgetItem(tag))
-                self.ui.tableWidget.setItem(len(self.exif) + r, 1, QTableWidgetItem(str(self.gps[tag])))
+                self.ui.tableWidget.setItem(len(self.exif) + r, 1, QTableWidgetItem(str(gps[tag])))
 
-            latitude, longitude = self.get_exif_location(self.gps)
-            url = '<a href="https://www.google.com/maps/search/?api=1&query={0},{1}"> Google Maps </a>'.format(
-                latitude, longitude)
-            print('url: {}'.format(url))
-            self.ui.link_maps.setText(url)
-
-            coordinate = (latitude, longitude)
-            m = folium.Map(title='GPS Location', zoom_start=18, location=coordinate)
-            popup = folium.Popup(f'<h4>For more info go to {url}</h4>', max_width=len('For more info go to') * 8)
-            folium.Marker(coordinate, popup=popup).add_to(m)
-            # save map data to data object
-            data = io.BytesIO()
-            m.save(data, close_file=False)
-            web_view = QWebEngineView()
-            web_view.setHtml(data.getvalue().decode())
-            self.ui.gridLayout_2.addWidget(web_view, 0, 0, 1, 1)
+            gps_location = gps_view(gps)
+            # visualize the map of gps info in exif data
+            self.ui.gridLayout_2.addWidget(gps_location, 0, 0, 1, 1)
 
         else:
             self.ui.tableWidget.setRowCount(len(self.exif))
             for r, tag in enumerate(self.exif):
                 self.ui.tableWidget.setItem(r, 0, QTableWidgetItem(tag))
                 self.ui.tableWidget.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
-
-    def convert_to_degress(self, value):
-        d = float(value[0])
-        m = float(value[1]) / 60.0
-        s = float(value[2]) / 3600.0
-        return d + m + s
-
-    def get_exif_location(self, gpsexif):
-        latitude, longitude = None, None
-
-        gps_latitude = gpsexif['GPSLatitude']
-        gps_latitude_ref = gpsexif['GPSLatitudeRef']
-        gps_longitude = gpsexif['GPSLongitude']
-        gps_longitude_ref = gpsexif['GPSLongitudeRef']
-
-        if gps_latitude and gps_latitude_ref and gps_longitude and gps_longitude_ref:
-            latitude = self.convert_to_degress(gps_latitude)
-            if gps_latitude_ref != 'N':
-                latitude = 0 - latitude
-
-            longitude = self.convert_to_degress(gps_longitude)
-            if gps_longitude_ref != 'E':
-                longitude = 0 - longitude
-
-        return latitude, longitude
 
 
 class ImgViewer(QMainWindow):
@@ -88,39 +49,36 @@ class ImgViewer(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
         self.model = model
 
-        # self.width = None
-        # self.height = None
-        self.ratio = None
-        self.file_name = None
-        self.pixmap = None
-
         self.show()
-
         self.interaction()
 
+    def resizeEvent(self, ev):
+        if self.model.file_name and self.model.pixmap:
+            self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
+        super().resizeEvent(ev)
+
     def interaction(self):
-        self.ui.action_open.triggered.connect(self.clicked_open)
+        self.ui.action_open.triggered.connect(self.open_img)
         self.ui.ccw_rotate.triggered.connect(self.left_rotate)
         self.ui.cw_rotate.triggered.connect(self.right_rotate)
         self.ui.current_img.triggered.connect(self.close_img)
-        self.ui.action_exif.triggered.connect(self.get_exif_info)
+        self.ui.action_exif.triggered.connect(self.show_exif)
 
-    def clicked_open(self):
-        self.file_name = QFileDialog.getOpenFileName(None, "Open File", '/home',
-                                                     "jpeg images (*.jpg *.jpeg *.JPG)")
-        if self.file_name[0]:
+    def open_img(self):
+        file_dialog = QFileDialog()
+        options = file_dialog.Options()
+        options |= file_dialog.DontUseNativeDialog
+        file_dialog.setGeometry(560, 290, 800, 480)
+        file_dialog.setWindowIcon(QtGui.QIcon("icons/application-dialog.png"))
+        self.model.file_name = file_dialog.getOpenFileName(file_dialog, "Open File", '/home',
+                                                           "jpeg images (*.jpg *.jpeg *.JPG)", options=options)
+        if self.model.file_name[0]:
             # open the image
-            self.pixmap = QPixmap(self.file_name[0])
-
-            self.size_img(self.pixmap.width(), self.pixmap.height())
-
-            self.ui.ccw_rotate.setEnabled(True)
-            self.ui.cw_rotate.setEnabled(True)
-            self.ui.close_images.setEnabled(True)
-            self.ui.action_exif.setEnabled(True)
+            self.model.pixmap = QPixmap(self.model.file_name[0])
+            self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
+            self.set_tools_enabled()
 
         else:
             msg_box = QMessageBox()
@@ -130,66 +88,64 @@ class ImgViewer(QMainWindow):
             msg_box.setText("No images have been selected")
             msg_box.exec_()
 
-
-    def size_img(self, width, height):
-        min_size = 512
+    def set_aspect_ratio(self, width, height):
+        max_size = 512
         if width > height:
             self.ui.image_label.setPixmap(
-                self.pixmap.scaled(QSize(self.ui.image_label.width(), min(self.ui.image_label.height(), min_size)),
-                                   Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                self.model.pixmap.scaled(
+                    QSize(self.ui.image_label.width(), min(self.ui.image_label.height(), max_size)),
+                    Qt.KeepAspectRatio, Qt.SmoothTransformation))
         else:
             self.ui.image_label.setPixmap(
-                self.pixmap.scaled(QSize(min(self.ui.image_label.width(), min_size), self.ui.image_label.height()),
-                                   Qt.KeepAspectRatio, Qt.SmoothTransformation))
-
-    def resizeEvent(self, ev):
-        if self.file_name and self.pixmap:
-            self.size_img(self.pixmap.width(), self.pixmap.height())
-        super().resizeEvent(ev)
+                self.model.pixmap.scaled(
+                    QSize(min(self.ui.image_label.width(), max_size), self.ui.image_label.height()),
+                    Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def left_rotate(self):
-        if self.file_name:
-            self.rotate = True
-            self.rotation = QTransform().rotate(-90.0)
-
-            self.pixmap = self.pixmap.transformed(self.rotation, Qt.SmoothTransformation)
-            self.size_img(self.pixmap.width(), self.pixmap.height())
-
-            self.rotation = 0
+        if self.model.file_name:
+            rotation = QTransform().rotate(-90.0)
+            self.model.pixmap = self.model.pixmap.transformed(rotation, Qt.SmoothTransformation)
+            self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
 
     def right_rotate(self):
-        if self.file_name:
-            self.rotate = True
-            self.rotation = QTransform().rotate(90.0)
+        if self.model.file_name:
+            rotation = QTransform().rotate(90.0)
 
-            self.pixmap = self.pixmap.transformed(self.rotation, Qt.SmoothTransformation)
-            self.size_img(self.pixmap.width(), self.pixmap.height())
-
-            self.rotation = 0
+            self.model.pixmap = self.model.pixmap.transformed(rotation, Qt.SmoothTransformation)
+            self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
 
     def close_img(self):
         # close image
-        if self.file_name:
-            self.file_name = None
+        if self.model.file_name:
+            self.model.file_name = None
             self.ui.image_label.setPixmap(QtGui.QPixmap("icons/add_img.PNG"))
-            self.ui.ccw_rotate.setDisabled(True)
-            self.ui.cw_rotate.setDisabled(True)
-            self.ui.close_images.setDisabled(True)
-            self.ui.action_exif.setDisabled(True)
+            self.set_tools_disabled()
 
-    def get_exif_info(self):
-        if self.file_name:
-            exif = self.model.get_exif(self.file_name[0])
+    def show_exif(self):
+        if self.model.file_name:
+            exif = self.model.get_exif(self.model.file_name[0])
             exif_viewer = ExifViewer(exif, self)
             exif_viewer.show()
 
+    def set_tools_enabled(self):
+        self.ui.ccw_rotate.setEnabled(True)
+        self.ui.cw_rotate.setEnabled(True)
+        self.ui.close_images.setEnabled(True)
+        self.ui.action_exif.setEnabled(True)
 
-if __name__ == "__main__":
-    import sys
+    def set_tools_disabled(self):
+        self.ui.ccw_rotate.setDisabled(True)
+        self.ui.cw_rotate.setDisabled(True)
+        self.ui.close_images.setDisabled(True)
+        self.ui.action_exif.setDisabled(True)
 
-    app = QtWidgets.QApplication(sys.argv)
-    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 
-    im_viewer = ImgViewer(Model())
-    im_viewer.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     import sys
+#
+#     app = QtWidgets.QApplication(sys.argv)
+#     app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+#
+#     im_viewer = ImgViewer(Model())
+#     im_viewer.show()
+#     sys.exit(app.exec_())

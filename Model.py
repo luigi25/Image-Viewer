@@ -6,10 +6,12 @@ import time
 
 
 class Model:
-    def __init__(self, current_image=None):
+    def __init__(self):
         # list of images
         self.images = list()
-        self.current_image = current_image
+        self.file_name = None
+        self.pixmap = None
+        self.current_image = None
 
     def get_exif(self, image):
         img = Image.open(image)
@@ -32,6 +34,9 @@ class Model:
     def get_element(self, index):
         current_element = self.images[index]
         self.update(current_element)
+
+    def get_list(self):
+        return self.images
 
     def empty_list(self):
         del self.images[:]
