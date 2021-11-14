@@ -29,7 +29,7 @@ def gps_view(gps_exif):
 
     url = '<a href="https://www.google.com/maps/search/?api=1&query={0},{1}"> Google Maps </a>'.format(
         latitude, longitude)
-    #print('url: {}'.format(url))
+    # print('url: {}'.format(url))
 
     coordinate = (latitude, longitude)
     m = folium.Map(title='GPS Location', zoom_start=18, location=coordinate)

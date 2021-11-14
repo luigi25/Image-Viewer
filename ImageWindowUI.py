@@ -1,9 +1,4 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem
-from PyQt5.QtGui import QPixmap, QTransform
-from PyQt5.QtCore import Qt
-from ExifWindowUI import Ui_Dialog
-from Model import Model
 
 
 class Ui_MainWindow(object):
@@ -24,6 +19,7 @@ class Ui_MainWindow(object):
         # self.gridLayout.addItem(spacerItem2, 2, 1, 1, 1)
         # spacerItem3 = QtWidgets.QSpacerItem(20, 75, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         # self.gridLayout.addItem(spacerItem3, 0, 1, 1, 1)
+        MainWindow.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         MainWindow.setMinimumSize(QtCore.QSize(700, 500))
         self.image_label = QtWidgets.QLabel(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -39,7 +35,28 @@ class Ui_MainWindow(object):
         self.image_label.setAlignment(QtCore.Qt.AlignCenter)
         self.image_label.setWordWrap(False)
         self.image_label.setObjectName("image_label")
-        self.gridLayout.addWidget(self.image_label, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.image_label, 0, 2, 1, 1)
+
+        self.list_widget = QtWidgets.QListWidget(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.list_widget.sizePolicy().hasHeightForWidth())
+        self.list_widget.setSizePolicy(sizePolicy)
+        self.list_widget.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.list_widget.setEditTriggers(QtWidgets.QAbstractItemView.SelectedClicked)
+        self.list_widget.setProperty("isWrapping", False)
+        self.list_widget.setWordWrap(False)
+        self.list_widget.setObjectName("list_view")
+        self.list_widget.setAlternatingRowColors(True)
+        self.list_widget.setTabKeyNavigation(True)
+        self.list_widget.setSpacing(3)
+        self.list_widget.setIconSize(QtCore.QSize(75, 75))
+        self.gridLayout.addWidget(self.list_widget, 0, 0, 1, 1)
+        spacerItem = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem, 0, 1, 1, 1)
+
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 873, 26))
@@ -112,7 +129,6 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

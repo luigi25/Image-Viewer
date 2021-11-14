@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QFileDialog, QMainWindow, QTableWidgetItem, QDialog, QMessageBox
-from PyQt5.QtGui import QPixmap, QTransform
+from PyQt5.QtWidgets import QFileDialog, QMainWindow, QTableWidgetItem, QDialog, QMessageBox, QListWidgetItem
+from PyQt5.QtGui import QPixmap, QTransform, QIcon
 from PyQt5.QtCore import Qt, QSize
 from PyQt5 import QtWidgets, QtGui, QtCore
 from Model import Model
@@ -78,7 +78,12 @@ class ImgViewer(QMainWindow):
             # open the image
             self.model.pixmap = QPixmap(self.model.file_name[0])
             self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
-            self.set_tools_enabled()
+
+            item = QtWidgets.QListWidgetItem(self.model.file_name[0].split('/')[-1])
+            icon = QtGui.QIcon()
+            icon.addPixmap(self.model.pixmap, QtGui.QIcon.Normal)
+            item.setIcon(icon)
+            self.ui.list_widget.addItem(item)
 
         else:
             msg_box = QMessageBox()

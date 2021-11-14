@@ -1,5 +1,6 @@
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QPixmap, QIcon
 import os
 import os.path
 import time
