@@ -50,12 +50,14 @@ class ImgViewer(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.model = model
+        self.file_name = None
+        self.items = list()
 
         self.show()
         self.interaction()
 
     def resizeEvent(self, ev):
-        if self.model.file_name and self.model.pixmap:
+        if self.model.images and self.ui.close_images.isEnabled():
             self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
         super().resizeEvent(ev)
 
@@ -65,6 +67,7 @@ class ImgViewer(QMainWindow):
         self.ui.cw_rotate.triggered.connect(self.right_rotate)
         self.ui.current_img.triggered.connect(self.close_img)
         self.ui.action_exif.triggered.connect(self.show_exif)
+        self.ui.list_widget.itemDoubleClicked.connect(self.upload_image)
 
     def open_img(self):
         file_dialog = QFileDialog()
@@ -72,18 +75,23 @@ class ImgViewer(QMainWindow):
         options |= file_dialog.DontUseNativeDialog
         file_dialog.setGeometry(560, 290, 800, 480)
         file_dialog.setWindowIcon(QtGui.QIcon("icons/application-dialog.png"))
-        self.model.file_name = file_dialog.getOpenFileName(file_dialog, "Open File", '/home',
-                                                           "jpeg images (*.jpg *.jpeg *.JPG)", options=options)
-        if self.model.file_name[0]:
+        self.file_name = file_dialog.getOpenFileName(file_dialog, "Open File", '/home',
+                                                     "jpeg images (*.jpg *.jpeg *.JPG)", options=options)
+        if self.file_name[0]:
             # open the image
-            self.model.pixmap = QPixmap(self.model.file_name[0])
+            self.model.pixmap = QPixmap(self.file_name[0])
             self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
 
-            item = QtWidgets.QListWidgetItem(self.model.file_name[0].split('/')[-1])
+            item = QtWidgets.QListWidgetItem(self.file_name[0].split('/')[-1])
             icon = QtGui.QIcon()
             icon.addPixmap(self.model.pixmap, QtGui.QIcon.Normal)
             item.setIcon(icon)
-            self.ui.list_widget.addItem(item)
+            if item.text() not in self.items:
+                self.items.append(item.text())
+                self.model.images.append(self.model.pixmap)
+                self.ui.list_widget.addItem(item)
+                self.ui.list_widget.setCurrentRow(len(self.ui.list_widget) - 1)
+            self.set_tools_enabled()
 
         else:
             msg_box = QMessageBox()
@@ -92,6 +100,13 @@ class ImgViewer(QMainWindow):
             msg_box.setWindowIcon(QtGui.QIcon('icons/exclamation.png'))
             msg_box.setText("No images have been selected")
             msg_box.exec_()
+
+    def upload_image(self):
+        self.current_item = self.ui.list_widget.currentRow()
+        self.model.get_element(self.current_item)  # Get image from model
+        self.model.pixmap = self.model.current_image
+        self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
+        self.set_tools_enabled()
 
     def set_aspect_ratio(self, width, height):
         max_size = 512
@@ -107,13 +122,13 @@ class ImgViewer(QMainWindow):
                     Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def left_rotate(self):
-        if self.model.file_name:
+        if self.model.pixmap:
             rotation = QTransform().rotate(-90.0)
             self.model.pixmap = self.model.pixmap.transformed(rotation, Qt.SmoothTransformation)
             self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
 
     def right_rotate(self):
-        if self.model.file_name:
+        if self.model.pixmap:
             rotation = QTransform().rotate(90.0)
 
             self.model.pixmap = self.model.pixmap.transformed(rotation, Qt.SmoothTransformation)
@@ -121,14 +136,17 @@ class ImgViewer(QMainWindow):
 
     def close_img(self):
         # close image
-        if self.model.file_name:
-            self.model.file_name = None
+        self.current_item = self.ui.list_widget.currentRow()
+        if len(self.ui.list_widget.selectedItems()) != 0:
+            self.model.delete_element(self.current_item)
+            self.ui.list_widget.takeItem(self.current_item)
+            self.items.pop(self.current_item)
             self.ui.image_label.setPixmap(QtGui.QPixmap("icons/add_img.PNG"))
             self.set_tools_disabled()
 
     def show_exif(self):
-        if self.model.file_name:
-            exif = self.model.get_exif(self.model.file_name[0])
+        if self.file_name:
+            exif = self.model.get_exif(self.file_name[0])
             exif_viewer = ExifViewer(exif, self)
             exif_viewer.show()
 
@@ -143,7 +161,6 @@ class ImgViewer(QMainWindow):
         self.ui.cw_rotate.setDisabled(True)
         self.ui.close_images.setDisabled(True)
         self.ui.action_exif.setDisabled(True)
-
 
 # if __name__ == "__main__":
 #     import sys

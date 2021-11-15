@@ -10,7 +10,6 @@ class Model:
     def __init__(self):
         # list of images
         self.images = list()
-        self.file_name = None
         self.pixmap = None
         self.current_image = None
 
@@ -38,6 +37,11 @@ class Model:
 
     def get_list(self):
         return self.images
+
+    def delete_element(self, position):
+        if self.images[position] == self.current_image:
+            self.update("")
+        self.images = [v for i, v in enumerate(self.images) if i != position]
 
     def empty_list(self):
         del self.images[:]
