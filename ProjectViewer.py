@@ -1,14 +1,10 @@
-from PyQt5.QtWidgets import QFileDialog, QMainWindow, QTableWidgetItem, QDialog, QMessageBox, QListWidgetItem
-from PyQt5.QtGui import QPixmap, QTransform, QIcon
+from PyQt5.QtWidgets import QFileDialog, QMainWindow, QTableWidgetItem, QDialog, QMessageBox
+from PyQt5.QtGui import QPixmap, QTransform
 from PyQt5.QtCore import Qt, QSize
 from PyQt5 import QtWidgets, QtGui, QtCore
 from Model import Model
 from ImageWindowUI import Ui_MainWindow
 from ExifWindowUI import Ui_Dialog
-import io
-import folium
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-import qdarkstyle
 from gps_utils import gps_view
 
 
@@ -50,8 +46,9 @@ class ImgViewer(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.model = model
-        self.file_name = None
+        self.file_names = list()
         self.items = list()
+        self.current_item = -1
 
         self.show()
         self.interaction()
@@ -60,6 +57,40 @@ class ImgViewer(QMainWindow):
         if self.model.images and self.ui.close_images.isEnabled():
             self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
         super().resizeEvent(ev)
+
+    def keyPressEvent(self, qKeyEvent):
+        if qKeyEvent.key() == QtCore.Qt.Key_Return:
+            self.upload_image()
+        else:
+            super().keyPressEvent(qKeyEvent)
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasImage:
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasImage:
+            event.setDropAction(Qt.CopyAction)
+            f_name = event.mimeData().urls()[0].toLocalFile()
+            self.model.pixmap = QPixmap(f_name[0])
+            self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
+
+            item = QtWidgets.QListWidgetItem(f_name[0].split('/')[-1])
+            icon = QtGui.QIcon()
+            icon.addPixmap(self.model.pixmap, QtGui.QIcon.Normal)
+            item.setIcon(icon)
+            if item.text() not in self.items:
+                self.items.append(item.text())
+                self.file_names.append(f_name[0])
+                self.model.images.append(self.model.pixmap)
+                self.ui.list_widget.addItem(item)
+                self.ui.list_widget.setCurrentRow(len(self.ui.list_widget) - 1)
+            self.set_tools_enabled()
+            event.accept()
+        else:
+            event.ignore()
 
     def interaction(self):
         self.ui.action_open.triggered.connect(self.open_img)
@@ -75,19 +106,20 @@ class ImgViewer(QMainWindow):
         options |= file_dialog.DontUseNativeDialog
         file_dialog.setGeometry(560, 290, 800, 480)
         file_dialog.setWindowIcon(QtGui.QIcon("icons/application-dialog.png"))
-        self.file_name = file_dialog.getOpenFileName(file_dialog, "Open File", '/home',
-                                                     "jpeg images (*.jpg *.jpeg *.JPG)", options=options)
-        if self.file_name[0]:
+        f_name = file_dialog.getOpenFileName(file_dialog, "Open File", '/home',
+                                             "jpeg images (*.jpg *.jpeg *.JPG)", options=options)
+        if f_name[0]:
             # open the image
-            self.model.pixmap = QPixmap(self.file_name[0])
+            self.model.pixmap = QPixmap(f_name[0])
             self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
 
-            item = QtWidgets.QListWidgetItem(self.file_name[0].split('/')[-1])
+            item = QtWidgets.QListWidgetItem(f_name[0].split('/')[-1])
             icon = QtGui.QIcon()
             icon.addPixmap(self.model.pixmap, QtGui.QIcon.Normal)
             item.setIcon(icon)
             if item.text() not in self.items:
                 self.items.append(item.text())
+                self.file_names.append(f_name[0])
                 self.model.images.append(self.model.pixmap)
                 self.ui.list_widget.addItem(item)
                 self.ui.list_widget.setCurrentRow(len(self.ui.list_widget) - 1)
@@ -136,17 +168,19 @@ class ImgViewer(QMainWindow):
 
     def close_img(self):
         # close image
-        self.current_item = self.ui.list_widget.currentRow()
         if len(self.ui.list_widget.selectedItems()) != 0:
+            self.current_item = self.ui.list_widget.currentRow()
             self.model.delete_element(self.current_item)
             self.ui.list_widget.takeItem(self.current_item)
             self.items.pop(self.current_item)
+            self.file_names.pop(self.current_item)
             self.ui.image_label.setPixmap(QtGui.QPixmap("icons/add_img.PNG"))
             self.set_tools_disabled()
 
     def show_exif(self):
-        if self.file_name:
-            exif = self.model.get_exif(self.file_name[0])
+        if self.model.pixmap:
+            self.current_item = self.ui.list_widget.currentRow()
+            exif = self.model.get_exif(self.file_names[self.current_item])
             exif_viewer = ExifViewer(exif, self)
             exif_viewer.show()
 

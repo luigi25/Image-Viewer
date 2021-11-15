@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'ui/exifviewer.ui'
-#
-# Created by: PyQt5 UI code generator 5.6
-#
-# WARNING! All changes made in this file will be lost!
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -86,6 +78,7 @@ class Ui_Dialog(object):
         item.setFont(font)
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Dialog", "Exif data"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Dialog", "GPS"))
+
 
 if __name__ == "__main__":
     import sys
