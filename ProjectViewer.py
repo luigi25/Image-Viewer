@@ -49,18 +49,20 @@ class ImgViewer(QMainWindow):
         self.file_names = list()
         self.items = list()
         self.current_item = -1
+        self.ui.list_widget.hide()
+        ImgViewer.setAcceptDrops(self, True)
 
         self.show()
         self.interaction()
 
     def resizeEvent(self, ev):
-        if self.model.images and self.ui.close_images.isEnabled():
+        if self.model.images and self.ui.close_option.isEnabled():
             self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
         super().resizeEvent(ev)
 
     def keyPressEvent(self, qKeyEvent):
         if qKeyEvent.key() == QtCore.Qt.Key_Return:
-            self.upload_image()
+            self.update_img()
         else:
             super().keyPressEvent(qKeyEvent)
 
@@ -75,7 +77,7 @@ class ImgViewer(QMainWindow):
             event.setDropAction(Qt.CopyAction)
             f_name = event.mimeData().urls()[0].toLocalFile()
             self.model.pixmap = QPixmap(f_name[0])
-            self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
+            # self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
 
             item = QtWidgets.QListWidgetItem(f_name[0].split('/')[-1])
             icon = QtGui.QIcon()
@@ -87,6 +89,7 @@ class ImgViewer(QMainWindow):
                 self.model.images.append(self.model.pixmap)
                 self.ui.list_widget.addItem(item)
                 self.ui.list_widget.setCurrentRow(len(self.ui.list_widget) - 1)
+                self.update_img()
             self.set_tools_enabled()
             event.accept()
         else:
@@ -96,9 +99,11 @@ class ImgViewer(QMainWindow):
         self.ui.action_open.triggered.connect(self.open_img)
         self.ui.ccw_rotate.triggered.connect(self.left_rotate)
         self.ui.cw_rotate.triggered.connect(self.right_rotate)
-        self.ui.current_img.triggered.connect(self.close_img)
+        self.ui.close_img.triggered.connect(self.close_img)
+        self.ui.close_all_img.triggered.connect(self.close_all_images)
         self.ui.action_exif.triggered.connect(self.show_exif)
-        self.ui.list_widget.itemDoubleClicked.connect(self.upload_image)
+        self.ui.side_list.triggered.connect(self.toggle_img_list)
+        self.ui.list_widget.itemDoubleClicked.connect(self.update_img)
 
     def open_img(self):
         file_dialog = QFileDialog()
@@ -111,8 +116,7 @@ class ImgViewer(QMainWindow):
         if f_name[0]:
             # open the image
             self.model.pixmap = QPixmap(f_name[0])
-            self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
-
+            # self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
             item = QtWidgets.QListWidgetItem(f_name[0].split('/')[-1])
             icon = QtGui.QIcon()
             icon.addPixmap(self.model.pixmap, QtGui.QIcon.Normal)
@@ -123,8 +127,10 @@ class ImgViewer(QMainWindow):
                 self.model.images.append(self.model.pixmap)
                 self.ui.list_widget.addItem(item)
                 self.ui.list_widget.setCurrentRow(len(self.ui.list_widget) - 1)
+                self.update_img()
+                self.ui.side_list.setChecked(True)
+                self.toggle_img_list()
             self.set_tools_enabled()
-
         else:
             msg_box = QMessageBox()
             msg_box.setIcon(QMessageBox.Warning)
@@ -133,7 +139,7 @@ class ImgViewer(QMainWindow):
             msg_box.setText("No images have been selected")
             msg_box.exec_()
 
-    def upload_image(self):
+    def update_img(self):
         self.current_item = self.ui.list_widget.currentRow()
         self.model.get_element(self.current_item)  # Get image from model
         self.model.pixmap = self.model.current_image
@@ -145,12 +151,12 @@ class ImgViewer(QMainWindow):
         if width > height:
             self.ui.image_label.setPixmap(
                 self.model.pixmap.scaled(
-                    QSize(self.ui.image_label.width(), min(self.ui.image_label.height(), max_size)),
+                    QSize(min(self.ui.image_label.width(), 512), min(self.ui.image_label.height(), 512)),
                     Qt.KeepAspectRatio, Qt.SmoothTransformation))
         else:
             self.ui.image_label.setPixmap(
                 self.model.pixmap.scaled(
-                    QSize(min(self.ui.image_label.width(), max_size), self.ui.image_label.height()),
+                    QSize(min(self.ui.image_label.width(), 512), min(self.ui.image_label.height(), 512)),
                     Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def left_rotate(self):
@@ -176,6 +182,20 @@ class ImgViewer(QMainWindow):
             self.file_names.pop(self.current_item)
             self.ui.image_label.setPixmap(QtGui.QPixmap("icons/add_img.PNG"))
             self.set_tools_disabled()
+            if not self.model.images:
+                self.ui.side_list.setChecked(False)
+                self.ui.list_widget.hide()
+
+    def close_all_images(self):
+        if len(self.ui.list_widget.selectedItems()) != 0:
+            self.model.empty_list()
+            del self.items[:]
+            del self.file_names[:]
+            self.ui.list_widget.clear()
+            self.ui.image_label.setPixmap(QtGui.QPixmap("icons/add_img.PNG"))
+            self.set_tools_disabled()
+            self.ui.side_list.setChecked(False)
+            self.ui.list_widget.hide()
 
     def show_exif(self):
         if self.model.pixmap:
@@ -184,16 +204,23 @@ class ImgViewer(QMainWindow):
             exif_viewer = ExifViewer(exif, self)
             exif_viewer.show()
 
+    def toggle_img_list(self):
+        # show/hide side list
+        if self.ui.side_list.isChecked() is False:
+            self.ui.list_widget.hide()
+        else:
+            self.ui.list_widget.show()
+
     def set_tools_enabled(self):
         self.ui.ccw_rotate.setEnabled(True)
         self.ui.cw_rotate.setEnabled(True)
-        self.ui.close_images.setEnabled(True)
+        self.ui.close_option.setEnabled(True)
         self.ui.action_exif.setEnabled(True)
 
     def set_tools_disabled(self):
         self.ui.ccw_rotate.setDisabled(True)
         self.ui.cw_rotate.setDisabled(True)
-        self.ui.close_images.setDisabled(True)
+        self.ui.close_option.setDisabled(True)
         self.ui.action_exif.setDisabled(True)
 
 # if __name__ == "__main__":
