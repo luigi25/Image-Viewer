@@ -57,7 +57,7 @@ class ImgViewer(QMainWindow):
 
     def resizeEvent(self, ev):
         if self.model.images and self.ui.close_option.isEnabled():
-            self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
+            self.set_aspect_ratio()
         super().resizeEvent(ev)
 
     def keyPressEvent(self, qKeyEvent):
@@ -77,7 +77,7 @@ class ImgViewer(QMainWindow):
             event.setDropAction(Qt.CopyAction)
             f_name = event.mimeData().urls()[0].toLocalFile()
             self.model.pixmap = QPixmap(f_name[0])
-            # self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
+            # self.set_aspect_ratio()
 
             item = QtWidgets.QListWidgetItem(f_name[0].split('/')[-1])
             icon = QtGui.QIcon()
@@ -116,7 +116,7 @@ class ImgViewer(QMainWindow):
         if f_name[0]:
             # open the image
             self.model.pixmap = QPixmap(f_name[0])
-            # self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
+            # self.set_aspect_ratio()
             item = QtWidgets.QListWidgetItem(f_name[0].split('/')[-1])
             icon = QtGui.QIcon()
             icon.addPixmap(self.model.pixmap, QtGui.QIcon.Normal)
@@ -130,7 +130,6 @@ class ImgViewer(QMainWindow):
                 self.update_img()
                 self.ui.side_list.setChecked(True)
                 self.toggle_img_list()
-            self.set_tools_enabled()
         else:
             msg_box = QMessageBox()
             msg_box.setIcon(QMessageBox.Warning)
@@ -143,34 +142,27 @@ class ImgViewer(QMainWindow):
         self.current_item = self.ui.list_widget.currentRow()
         self.model.get_element(self.current_item)  # Get image from model
         self.model.pixmap = self.model.current_image
-        self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
+        self.set_aspect_ratio()
         self.set_tools_enabled()
 
-    def set_aspect_ratio(self, width, height):
+    def set_aspect_ratio(self):
         max_size = 512
-        if width > height:
-            self.ui.image_label.setPixmap(
-                self.model.pixmap.scaled(
-                    QSize(min(self.ui.image_label.width(), 512), min(self.ui.image_label.height(), 512)),
-                    Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        else:
-            self.ui.image_label.setPixmap(
-                self.model.pixmap.scaled(
-                    QSize(min(self.ui.image_label.width(), 512), min(self.ui.image_label.height(), 512)),
-                    Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.ui.image_label.setPixmap(
+            self.model.pixmap.scaled(
+                QSize(min(self.ui.image_label.width(), max_size), min(self.ui.image_label.height(), max_size)),
+                Qt.KeepAspectRatio, Qt.FastTransformation))
 
     def left_rotate(self):
         if self.model.pixmap:
             rotation = QTransform().rotate(-90.0)
-            self.model.pixmap = self.model.pixmap.transformed(rotation, Qt.SmoothTransformation)
-            self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
+            self.model.pixmap = self.model.pixmap.transformed(rotation, Qt.FastTransformation)
+            self.set_aspect_ratio()
 
     def right_rotate(self):
         if self.model.pixmap:
             rotation = QTransform().rotate(90.0)
-
-            self.model.pixmap = self.model.pixmap.transformed(rotation, Qt.SmoothTransformation)
-            self.set_aspect_ratio(self.model.pixmap.width(), self.model.pixmap.height())
+            self.model.pixmap = self.model.pixmap.transformed(rotation, Qt.FastTransformation)
+            self.set_aspect_ratio()
 
     def close_img(self):
         # close image

@@ -4,9 +4,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(800, 550)
         MainWindow.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        MainWindow.setMinimumSize(QtCore.QSize(800, 600))
+        MainWindow.setMinimumSize(QtCore.QSize(800, 550))
         MainWindow.setWindowIcon(QtGui.QIcon('icons/application-image.png'))
         MainWindow.setAcceptDrops(True)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -169,7 +169,7 @@ class Ui_MainWindow(object):
         self.action_exif.setText(_translate("MainWindow", "Exif Info"))
         self.action_exif.setStatusTip(_translate("MainWindow", "Get exif info"))
         self.action_exif.setShortcut(_translate("MainWindow", "Ctrl+E"))
-        self.side_list.setText(_translate("MainWindow", "Show Images List"))
+        self.side_list.setText(_translate("MainWindow", "Images List"))
         self.side_list.setStatusTip(_translate("MainWindow", "Show the list of open images"))
         self.side_list.setShortcut(_translate("MainWindow", "Ctrl+I"))
         self.image_label.setStatusTip(
