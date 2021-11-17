@@ -156,7 +156,7 @@ class Ui_MainWindow(object):
         self.action_open.setText(_translate("MainWindow", "Open"))
         self.action_open.setIconText(_translate("MainWindow", "Open"))
         self.action_open.setToolTip(_translate("MainWindow", "Open"))
-        self.action_open.setStatusTip(_translate("MainWindow", "Select image to open"))
+        self.action_open.setStatusTip(_translate("MainWindow", "Select the image to open"))
         self.action_open.setShortcut(_translate("MainWindow", "Ctrl+O"))
         self.actionCurrent.setText(_translate("MainWindow", "Current"))
         self.close_img.setText(_translate("MainWindow", "Current"))
@@ -172,13 +172,14 @@ class Ui_MainWindow(object):
         self.ccw_rotate.setStatusTip(_translate("MainWindow", "Rotate the image to the left"))
         self.ccw_rotate.setShortcut(_translate("MainWindow", "Ctrl+L"))
         self.action_exif.setText(_translate("MainWindow", "Exif Info"))
-        self.action_exif.setStatusTip(_translate("MainWindow", "Get exif info"))
+        self.action_exif.setStatusTip(_translate("MainWindow", "Show exif info"))
         self.action_exif.setShortcut(_translate("MainWindow", "Ctrl+E"))
         self.side_list.setText(_translate("MainWindow", "Images List"))
         self.side_list.setStatusTip(_translate("MainWindow", "Show the list of open images"))
         self.side_list.setShortcut(_translate("MainWindow", "Ctrl+I"))
         self.image_label.setStatusTip(
             _translate("MainWindow", 'Go to "File" and click "Open" or Press "Ctrl+O" to open an image'))
+        self.list_widget.setStatusTip(_translate("MainWindow", "The list of open images"))
 
 
 if __name__ == "__main__":
