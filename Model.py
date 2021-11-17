@@ -28,19 +28,19 @@ class Model:
         else:
             return dict().items()
 
-    def update(self, image):
+    def set_current_img(self, image):
         self.current_image = image
 
-    def get_element(self, index):
+    def get_current_img(self, index):
         current_element = self.images[index]
-        self.update(current_element)
+        self.set_current_img(current_element)
 
     def get_list(self):
         return self.images
 
-    def delete_element(self, position):
+    def delete_current_img(self, position):
         if self.images[position] == self.current_image:
-            self.update("")
+            self.set_current_img("")
         self.images = [v for i, v in enumerate(self.images) if i != position]
 
     def empty_list(self):

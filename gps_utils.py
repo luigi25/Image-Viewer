@@ -10,7 +10,7 @@ def convert_to_degrees(value):
     return d + m + s
 
 
-def gps_view(gps_exif):
+def gps_map(gps_exif):
     latitude, longitude = None, None
 
     gps_latitude = gps_exif['GPSLatitude']

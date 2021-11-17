@@ -5,7 +5,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from Model import Model
 from ImageWindowUI import Ui_MainWindow
 from ExifWindowUI import Ui_Dialog
-from gps_utils import gps_view
+from gps_utils import gps_map
 
 
 class ExifViewer(QDialog):
@@ -28,7 +28,7 @@ class ExifViewer(QDialog):
                 self.ui.tableWidget.setItem(len(self.exif) + r, 0, QTableWidgetItem(tag))
                 self.ui.tableWidget.setItem(len(self.exif) + r, 1, QTableWidgetItem(str(gps[tag])))
 
-            gps_location = gps_view(gps)
+            gps_location = gps_map(gps)
             # visualize the map of gps info in exif data
             self.ui.gridLayout_2.addWidget(gps_location, 0, 0, 1, 1)
 
@@ -50,7 +50,6 @@ class ImgViewer(QMainWindow):
         self.items = list()
         self.current_item = -1
         self.ui.list_widget.hide()
-        ImgViewer.setAcceptDrops(self, True)
 
         self.show()
         self.interaction()
@@ -65,35 +64,6 @@ class ImgViewer(QMainWindow):
             self.update_img()
         else:
             super().keyPressEvent(qKeyEvent)
-
-    def dragMoveEvent(self, event):
-        if event.mimeData().hasImage:
-            event.accept()
-        else:
-            event.ignore()
-
-    def dropEvent(self, event):
-        if event.mimeData().hasImage:
-            event.setDropAction(Qt.CopyAction)
-            f_name = event.mimeData().urls()[0].toLocalFile()
-            self.model.pixmap = QPixmap(f_name[0])
-            # self.set_aspect_ratio()
-
-            item = QtWidgets.QListWidgetItem(f_name[0].split('/')[-1])
-            icon = QtGui.QIcon()
-            icon.addPixmap(self.model.pixmap, QtGui.QIcon.Normal)
-            item.setIcon(icon)
-            if item.text() not in self.items:
-                self.items.append(item.text())
-                self.file_names.append(f_name[0])
-                self.model.images.append(self.model.pixmap)
-                self.ui.list_widget.addItem(item)
-                self.ui.list_widget.setCurrentRow(len(self.ui.list_widget) - 1)
-                self.update_img()
-            self.set_tools_enabled()
-            event.accept()
-        else:
-            event.ignore()
 
     def interaction(self):
         self.ui.action_open.triggered.connect(self.open_img)
@@ -116,7 +86,6 @@ class ImgViewer(QMainWindow):
         if f_name[0]:
             # open the image
             self.model.pixmap = QPixmap(f_name[0])
-            # self.set_aspect_ratio()
             item = QtWidgets.QListWidgetItem(f_name[0].split('/')[-1])
             icon = QtGui.QIcon()
             icon.addPixmap(self.model.pixmap, QtGui.QIcon.Normal)
@@ -140,7 +109,7 @@ class ImgViewer(QMainWindow):
 
     def update_img(self):
         self.current_item = self.ui.list_widget.currentRow()
-        self.model.get_element(self.current_item)  # Get image from model
+        self.model.get_current_img(self.current_item)  # Get image from model
         self.model.pixmap = self.model.current_image
         self.set_aspect_ratio()
         self.set_tools_enabled()
@@ -168,7 +137,7 @@ class ImgViewer(QMainWindow):
         # close image
         if len(self.ui.list_widget.selectedItems()) != 0:
             self.current_item = self.ui.list_widget.currentRow()
-            self.model.delete_element(self.current_item)
+            self.model.delete_current_img(self.current_item)
             self.ui.list_widget.takeItem(self.current_item)
             self.items.pop(self.current_item)
             self.file_names.pop(self.current_item)
@@ -214,13 +183,3 @@ class ImgViewer(QMainWindow):
         self.ui.cw_rotate.setDisabled(True)
         self.ui.close_option.setDisabled(True)
         self.ui.action_exif.setDisabled(True)
-
-# if __name__ == "__main__":
-#     import sys
-#
-#     app = QtWidgets.QApplication(sys.argv)
-#     app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-#
-#     im_viewer = ImgViewer(Model())
-#     im_viewer.show()
-#     sys.exit(app.exec_())

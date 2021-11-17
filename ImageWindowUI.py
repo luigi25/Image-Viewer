@@ -4,9 +4,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 550)
+        MainWindow.resize(820, 550)
         MainWindow.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        MainWindow.setMinimumSize(QtCore.QSize(800, 550))
+        MainWindow.setMinimumSize(QtCore.QSize(820, 550))
         MainWindow.setWindowIcon(QtGui.QIcon('icons/application-image.png'))
         MainWindow.setAcceptDrops(True)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -24,7 +24,6 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.image_label.sizePolicy().hasHeightForWidth())
         self.image_label.setSizePolicy(sizePolicy)
-        self.image_label.setAcceptDrops(True)
         self.image_label.setAutoFillBackground(False)
         self.image_label.setText("")
         self.image_label.setPixmap(QtGui.QPixmap("icons/add_img.png"))
@@ -48,13 +47,11 @@ class Ui_MainWindow(object):
         self.list_widget.setObjectName("list_view")
         self.list_widget.setAlternatingRowColors(True)
         self.list_widget.setTabKeyNavigation(True)
-        self.list_widget.setAcceptDrops(True)
         self.list_widget.setSpacing(5)
         self.list_widget.setIconSize(QtCore.QSize(75, 75))
         self.gridLayout.addWidget(self.list_widget, 0, 0, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem, 0, 1, 1, 1)
-
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -87,8 +84,16 @@ class Ui_MainWindow(object):
         self.actionCurrent.setObjectName("actionCurrent")
         self.close_img = QtWidgets.QAction(MainWindow)
         self.close_img.setObjectName("close_img")
+        icon_close = QtGui.QIcon()
+        icon_close.addPixmap(QtGui.QPixmap("icons/slide.png"),
+                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.close_img.setIcon(icon_close)
         self.close_all_img = QtWidgets.QAction(MainWindow)
         self.close_all_img.setObjectName("close_all_img")
+        icon_close_all = QtGui.QIcon()
+        icon_close_all.addPixmap(QtGui.QPixmap("icons/slides-stack.png"),
+                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.close_all_img.setIcon(icon_close_all)
         self.cw_rotate = QtWidgets.QAction(MainWindow)
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap("icons/arrow-circle-315.png"),
