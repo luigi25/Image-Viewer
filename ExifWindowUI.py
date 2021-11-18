@@ -113,7 +113,7 @@ class Ui_Dialog(object):
         item_1.setText(_translate("Dialog", "Values"))
         item.setFont(font)
         item_1.setFont(font)
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Dialog", "Info data"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Dialog", "General info"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), _translate("Dialog", "Exif data"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Dialog", "GPS"))
 

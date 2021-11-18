@@ -9,34 +9,41 @@ from gps_utils import gps_map
 
 
 class ExifViewer(QDialog):
-    def __init__(self, exif, parent=None):
+    def __init__(self, info, exif, parent=None):
         super(ExifViewer, self).__init__(parent)
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+        self.info = info
         self.exif = exif
         self.fill_table()
 
     def fill_table(self):
         gps = self.exif.pop('GPSInfo') if ('GPSInfo' in self.exif) else None
-        if gps:
-            self.ui.tableWidget.setRowCount(len(self.exif) + len(gps))
-            for r, tag in enumerate(self.exif):
+        if self.info:
+            self.ui.tableWidget.setRowCount(len(self.info))
+            for r, tag in enumerate(self.info):
                 self.ui.tableWidget.setItem(r, 0, QTableWidgetItem(tag))
-                self.ui.tableWidget.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
+                self.ui.tableWidget.setItem(r, 1, QTableWidgetItem(str(self.info[tag])))
+
+        if gps:
+            self.ui.tableWidget1.setRowCount(len(self.exif) + len(gps))
+            for r, tag in enumerate(self.exif):
+                self.ui.tableWidget1.setItem(r, 0, QTableWidgetItem(tag))
+                self.ui.tableWidget1.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
 
             for r, tag in enumerate(gps):
-                self.ui.tableWidget.setItem(len(self.exif) + r, 0, QTableWidgetItem(tag))
-                self.ui.tableWidget.setItem(len(self.exif) + r, 1, QTableWidgetItem(str(gps[tag])))
+                self.ui.tableWidget1.setItem(len(self.exif) + r, 0, QTableWidgetItem(tag))
+                self.ui.tableWidget1.setItem(len(self.exif) + r, 1, QTableWidgetItem(str(gps[tag])))
 
             gps_location = gps_map(gps)
             # visualize the map of gps info in exif data
             self.ui.gridLayout_2.addWidget(gps_location, 0, 0, 1, 1)
 
         else:
-            self.ui.tableWidget.setRowCount(len(self.exif))
+            self.ui.tableWidget1.setRowCount(len(self.exif))
             for r, tag in enumerate(self.exif):
-                self.ui.tableWidget.setItem(r, 0, QTableWidgetItem(tag))
-                self.ui.tableWidget.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
+                self.ui.tableWidget1.setItem(r, 0, QTableWidgetItem(tag))
+                self.ui.tableWidget1.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
 
 
 class ImgViewer(QMainWindow):
@@ -71,7 +78,7 @@ class ImgViewer(QMainWindow):
         self.ui.cw_rotate.triggered.connect(self.right_rotate)
         self.ui.close_img.triggered.connect(self.close_img)
         self.ui.close_all_img.triggered.connect(self.close_all_images)
-        self.ui.action_exif.triggered.connect(self.show_exif)
+        self.ui.action_exif.triggered.connect(self.show_img_data)
         self.ui.side_list.triggered.connect(self.toggle_img_list)
         self.ui.list_widget.itemDoubleClicked.connect(self.update_img)
 
@@ -82,7 +89,7 @@ class ImgViewer(QMainWindow):
         file_dialog.setGeometry(560, 290, 800, 480)
         file_dialog.setWindowIcon(QtGui.QIcon("icons/application-dialog.png"))
         f_name = file_dialog.getOpenFileName(file_dialog, "Open File", '/home',
-                                             "jpeg images (*.jpg *.jpeg *.JPG)", options=options)
+                                             "Images (*.jpg *.jpeg *.png *.JPG *.PNG)", options=options)
         if f_name[0]:
             # open the image
             self.model.pixmap = QPixmap(f_name[0])
@@ -102,9 +109,9 @@ class ImgViewer(QMainWindow):
         else:
             msg_box = QMessageBox()
             msg_box.setIcon(QMessageBox.Warning)
-            msg_box.setWindowTitle('Selection Error')
+            msg_box.setWindowTitle('Warning')
             msg_box.setWindowIcon(QtGui.QIcon('icons/exclamation.png'))
-            msg_box.setText("No images have been selected")
+            msg_box.setText("No image selected")
             msg_box.exec_()
 
     def update_img(self):
@@ -158,11 +165,12 @@ class ImgViewer(QMainWindow):
             self.ui.side_list.setChecked(False)
             self.ui.list_widget.hide()
 
-    def show_exif(self):
+    def show_img_data(self):
         if self.model.pixmap:
             self.current_item = self.ui.list_widget.currentRow()
-            exif = self.model.get_exif(self.file_names[self.current_item])
-            exif_viewer = ExifViewer(exif, self)
+            info = self.model.extract_general_info(self.file_names[self.current_item])
+            exif = self.model.extract_exif(self.file_names[self.current_item])
+            exif_viewer = ExifViewer(info, exif, self)
             exif_viewer.show()
 
     def toggle_img_list(self):

@@ -1,9 +1,9 @@
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QPixmap, QIcon
 import os
 import os.path
 import time
+from hurry.filesize import size
 
 
 class Model:
@@ -12,21 +12,38 @@ class Model:
         self.images = list()
         self.pixmap = None
         self.current_image = None
+        self.info = dict()
+        self.exif = dict()
 
-    def get_exif(self, image):
+    def extract_exif(self, image):
         img = Image.open(image)
         if img._getexif():
             exif_info = img._getexif().items()
-            exif_data = {TAGS[tag]: value for tag, value in exif_info if tag in TAGS}
-            if 'GPSInfo' in exif_data:
+            self.exif = {TAGS[tag]: value for tag, value in exif_info if tag in TAGS}
+            if 'GPSInfo' in self.exif:
                 gps_data = dict()
-                for k in exif_data['GPSInfo'].keys():
+                for k in self.exif['GPSInfo'].keys():
                     gps_info = GPSTAGS.get(k, k)
-                    gps_data[gps_info] = exif_data['GPSInfo'][k]
-                exif_data['GPSInfo'] = gps_data
-            return exif_data
+                    gps_data[gps_info] = self.exif['GPSInfo'][k]
+                self.exif['GPSInfo'] = gps_data
         else:
-            return dict().items()
+            self.exif = dict()
+        return self.exif
+
+    def extract_general_info(self, image):
+        img = Image.open(image)
+        if img:
+            self.info['FileName'] = os.path.basename(img.filename)
+            self.info['DocumentType'] = img.format
+            self.info['FileSize'] = size(os.stat(img.filename).st_size) + " (%5d bytes)" % os.stat(
+                img.filename).st_size
+            self.info['CreationDate'] = time.ctime(os.path.getctime(img.filename))
+            self.info['ModificationDate'] = time.ctime(os.path.getmtime(img.filename))
+            self.info['ImageSize'] = img.size
+            self.info['ColorModel'] = img.mode
+        else:
+            self.info = dict()
+        return self.info
 
     def set_current_img(self, image):
         self.current_image = image
