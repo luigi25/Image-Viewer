@@ -1,8 +1,8 @@
 import sys
+import qdarkstyle
 from PyQt5.QtWidgets import QApplication
 from Model import Model
 from ProjectViewer import ImgViewer
-import qdarkstyle
 
 
 def main():

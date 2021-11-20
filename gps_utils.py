@@ -1,6 +1,6 @@
-import folium
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import io
+import folium
 
 
 def convert_to_degrees(value):

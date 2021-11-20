@@ -1,16 +1,15 @@
-from PIL import Image
-from PIL.ExifTags import TAGS, GPSTAGS
 import os
-import os.path
 import time
+import os.path
+from PIL import Image
 from hurry.filesize import size
+from PIL.ExifTags import TAGS, GPSTAGS
 
 
 class Model:
     def __init__(self):
         # list of images
         self.images = list()
-        self.pixmap = None
         self.current_image = None
         self.info = dict()
         self.exif = dict()
@@ -34,30 +33,30 @@ class Model:
         img = Image.open(image)
         if img:
             self.info['FileName'] = os.path.basename(img.filename)
-            self.info['DocumentType'] = img.format
+            self.info['Format'] = img.format
             self.info['FileSize'] = size(os.stat(img.filename).st_size) + " (%5d bytes)" % os.stat(
                 img.filename).st_size
             self.info['CreationDate'] = time.ctime(os.path.getctime(img.filename))
             self.info['ModificationDate'] = time.ctime(os.path.getmtime(img.filename))
             self.info['ImageSize'] = img.size
-            self.info['ColorModel'] = img.mode
+            self.info['ColorMode'] = img.mode
         else:
             self.info = dict()
         return self.info
 
-    def set_current_img(self, image):
+    def update_img(self, image):
         self.current_image = image
 
-    def get_current_img(self, index):
+    def set_current_img(self, index):
         current_element = self.images[index]
-        self.set_current_img(current_element)
+        self.update_img(current_element)
 
     def get_list(self):
         return self.images
 
     def delete_current_img(self, position):
         if self.images[position] == self.current_image:
-            self.set_current_img("")
+            self.update_img("")
         self.images = [v for i, v in enumerate(self.images) if i != position]
 
     def empty_list(self):

@@ -120,8 +120,11 @@ class Ui_Dialog(object):
 
 if __name__ == "__main__":
     import sys
+    import qdarkstyle
+    from PyQt5.QtWidgets import QApplication
 
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
+    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     Dialog = QtWidgets.QDialog()
     ui = Ui_Dialog()
     ui.setupUi(Dialog)
