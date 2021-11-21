@@ -1,5 +1,5 @@
 # Image-Viewer
-Image viewer application to show and manage images for HCI course at Università degli Studi di Firenze.
+Image Viewer application allow to show and manage png and jpeg images; it is implemented for HCI course at Università degli Studi di Firenze.
 
 ## Prerequisites
 Package | Version
@@ -17,7 +17,7 @@ python3 main.py
 ```
 
 The MainWindow presents itself like this:
-![init.png](/screen/init.png)
+![init.PNG](screen/init.PNG)
 
 ## Overview
 Exchangeable image file format (**Exif**) is a standard that specifies the formats for images, sound, and ancillary tags used by digital cameras, smartphones, scanners and other systems handling image and sound files recorded by digital cameras. 
@@ -39,8 +39,8 @@ From the starting window a message is displayed to help you load the images and 
 * **Right click** and choose "Open an image".
 In the file dialog that appears you can choose jpeg or png images.
 The user can also drag one or more images into the window: if the user drags more than one photo, the list below will be filled and the last photo will be uploaded.
-The MainWindow will show up as follows
-![load.png](/screen/load.png)
+The MainWindow will show up as follows:
+![load.PNG](screen/load.PNG)
 
 ### Remove Image
 Currently viewed images can be **removed** from "File -> Close image(s) -> Current" in the menu bar.
@@ -53,10 +53,14 @@ The viewed images can be **rotated** to the right or to the left through "Tools 
 
 ### Images List
 The **images list** can be used to navigate through the loaded images and can be toggled from "View -> Images list" in the menu bar.
+The image to visualize can be updated through a double click or Enter Key on the thumbnail in the list.
 
 ### Get Info
 The user can view general information and exif data of the photo displayed in the MainWindow through "View -> Get info" in the menu bar.
-![exif.png](/screen/exif.png)
+The ExifWindow will show up as follows:
+![info.PNG](screen/info.PNG)
+![exif.PNG](screen/exif.PNG)
+![gps.PNG](screen/gps.PNG)
 
 **All features are at hand with a right click through a context menu**.
 
