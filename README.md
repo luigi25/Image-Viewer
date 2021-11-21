@@ -7,6 +7,7 @@ Package | Version
 [Python](https://www.python.org) | 3.8
 [PyQt](https://www.riverbankcomputing.com/software/pyqt/download5) | 5.9.2
 [Pillow](http://pillow.readthedocs.io/en/latest/index.html) | 8.4.0
+[folium](https://pypi.org/project/folium) | 0.12.1
 [hurry.filesize](https://pypi.org/project/hurry.filesize) | 0.9
 [QDarkStylesheet](https://pypi.org/project/QDarkStyle) | 3.0.2
 
