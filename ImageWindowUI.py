@@ -28,7 +28,7 @@ class Ui_MainWindow(object):
         self.image_label.setSizePolicy(sizePolicy)
         self.image_label.setAutoFillBackground(False)
         self.image_label.setText("")
-        self.image_label.setPixmap(QtGui.QPixmap("icons/add_img.png"))
+        self.image_label.setPixmap(QtGui.QPixmap("icons/default_img.png"))
         self.image_label.setScaledContents(False)
         self.image_label.setAlignment(QtCore.Qt.AlignCenter)
         self.image_label.setWordWrap(False)
@@ -78,7 +78,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
         self.action_open = QtWidgets.QAction(MainWindow)
         icon_open = QtGui.QIcon()
-        icon_open.addPixmap(QtGui.QPixmap("icons/image.png"),
+        icon_open.addPixmap(QtGui.QPixmap("icons/open_image.png"),
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_open.setIcon(icon_open)
         self.action_open.setObjectName("action_open")
@@ -150,7 +150,7 @@ class Ui_MainWindow(object):
         self.ccw_rotate_context = self.context_menu.addAction("90° counterclockwise")
         self.ccw_rotate_context.setIcon(icon_ccw)
         self.ccw_rotate_context.setDisabled(True)
-        self.info_context = self.context_menu.addAction("Get info")
+        self.info_context = self.context_menu.addAction("Get image info")
         self.info_context.setIcon(icon_info)
         self.info_context.setDisabled(True)
         self.list_context = self.context_menu.addAction("Toggle images list")

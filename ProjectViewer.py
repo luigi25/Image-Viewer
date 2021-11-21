@@ -1,11 +1,10 @@
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import Qt, QSize, QFileInfo
-from PyQt5.QtWidgets import QFileDialog, QMainWindow, QTableWidgetItem, QDialog, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QMainWindow, QTableWidgetItem, QDialog, QMessageBox, QLabel
 from Model import Model
 from ExifWindowUI import Ui_Dialog
 from ImageWindowUI import Ui_MainWindow
 from gps_utils import gps_map
-from itertools import cycle
 
 
 class ExifViewer(QDialog):
@@ -24,26 +23,44 @@ class ExifViewer(QDialog):
             for r, tag in enumerate(self.info):
                 self.ui.tableWidget.setItem(r, 0, QTableWidgetItem(tag))
                 self.ui.tableWidget.setItem(r, 1, QTableWidgetItem(str(self.info[tag])))
+        else:
+            self.ui.tableWidget.hide()
+            no_info = QLabel()
+            no_info.setAlignment(Qt.AlignCenter)
+            no_info.setText(f"<h1>No Infos available for this image</h1>")
+            self.ui.gridLayout1.addWidget(no_info, 0, 0, 1, 1)
 
-        if gps:
-            self.ui.tableWidget1.setRowCount(len(self.exif) + len(gps))
-            for r, tag in enumerate(self.exif):
-                self.ui.tableWidget1.setItem(r, 0, QTableWidgetItem(tag))
-                self.ui.tableWidget1.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
+        if self.exif:
+            if gps:
+                self.ui.tableWidget1.setRowCount(len(self.exif) + len(gps))
+                for r, tag in enumerate(self.exif):
+                    self.ui.tableWidget1.setItem(r, 0, QTableWidgetItem(tag))
+                    self.ui.tableWidget1.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
 
-            for r, tag in enumerate(gps):
-                self.ui.tableWidget1.setItem(len(self.exif) + r, 0, QTableWidgetItem(tag))
-                self.ui.tableWidget1.setItem(len(self.exif) + r, 1, QTableWidgetItem(str(gps[tag])))
+                for r, tag in enumerate(gps):
+                    self.ui.tableWidget1.setItem(len(self.exif) + r, 0, QTableWidgetItem(tag))
+                    self.ui.tableWidget1.setItem(len(self.exif) + r, 1, QTableWidgetItem(str(gps[tag])))
 
-            gps_location = gps_map(gps)
-            # visualize the map of gps info in exif data
-            self.ui.gridLayout_2.addWidget(gps_location, 0, 0, 1, 1)
+                gps_location = gps_map(gps)
+                # visualize the map of gps info in exif data
+                self.ui.gridLayout3.addWidget(gps_location, 0, 0, 1, 1)
+
+            else:
+                self.ui.tableWidget1.setRowCount(len(self.exif))
+                for r, tag in enumerate(self.exif):
+                    self.ui.tableWidget1.setItem(r, 0, QTableWidgetItem(tag))
+                    self.ui.tableWidget1.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
 
         else:
-            self.ui.tableWidget1.setRowCount(len(self.exif))
-            for r, tag in enumerate(self.exif):
-                self.ui.tableWidget1.setItem(r, 0, QTableWidgetItem(tag))
-                self.ui.tableWidget1.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
+            self.ui.tableWidget1.hide()
+            no_exif = QLabel()
+            no_exif.setAlignment(Qt.AlignCenter)
+            no_exif.setText(f"<h1>No Exif data available for this image</h1>")
+            no_gps = QLabel()
+            no_gps.setAlignment(Qt.AlignCenter)
+            no_gps.setText(f"<h1>No GPS map available for this image</h1>")
+            self.ui.gridLayout2.addWidget(no_exif, 0, 0, 1, 1)
+            self.ui.gridLayout3.addWidget(no_gps, 0, 0, 1, 1)
 
 
 class ImgViewer(QMainWindow):
@@ -88,14 +105,14 @@ class ImgViewer(QMainWindow):
             e.accept()
             for url in e.mimeData().urls():
                 f_name = str(url.toLocalFile())
-                self.open_img(f_name)
+                self.load_img(f_name)
         else:
             e.ignore()
 
     def contextMenuEvent(self, event):
         action = self.ui.context_menu.exec_(self.mapToGlobal(event.pos()))
         if action == self.ui.open_context:
-            self.open_img()
+            self.load_img()
         elif action == self.ui.close_context:
             self.close_img()
         elif action == self.ui.close_all_context:
@@ -110,7 +127,7 @@ class ImgViewer(QMainWindow):
             self.toggle_img_list()
 
     def interaction(self):
-        self.ui.action_open.triggered.connect(self.open_img)
+        self.ui.action_open.triggered.connect(self.load_img)
         self.ui.ccw_rotate.triggered.connect(self.left_rotate)
         self.ui.cw_rotate.triggered.connect(self.right_rotate)
         self.ui.close_img.triggered.connect(self.close_img)
@@ -119,7 +136,7 @@ class ImgViewer(QMainWindow):
         self.ui.side_list.triggered.connect(self.toggle_img_list)
         self.ui.list_widget.itemDoubleClicked.connect(self.update_img)
 
-    def open_img(self, f_name=None):
+    def load_img(self, f_name=None):
         # choose f_name from file_dialog if is None
         if not f_name:
             file_dialog = QFileDialog()
@@ -142,9 +159,8 @@ class ImgViewer(QMainWindow):
                 self.ui.list_widget.addItem(item)
                 self.ui.list_widget.setCurrentRow(len(self.ui.list_widget) - 1)
                 self.update_img()
-                if len(self.ui.list_widget) >= 1:
-                    self.ui.list_widget.show()
-                    self.ui.list_widget.setSelectionMode(True)
+                self.ui.list_widget.show()
+
         else:
             msg_box = QMessageBox()
             msg_box.setIcon(QMessageBox.Warning)
@@ -185,7 +201,7 @@ class ImgViewer(QMainWindow):
             self.model.delete_current_img(self.current_item)
             self.ui.list_widget.takeItem(self.current_item)
             self.file_names.pop(self.current_item)
-            self.ui.image_label.setPixmap(QtGui.QPixmap("icons/add_img.PNG"))
+            self.ui.image_label.setPixmap(QtGui.QPixmap("icons/default_img.PNG"))
             self.set_tools_disabled()
             if not self.model.images:
                 self.ui.list_widget.hide()
@@ -195,7 +211,7 @@ class ImgViewer(QMainWindow):
             self.model.empty_list()
             del self.file_names[:]
             self.ui.list_widget.clear()
-            self.ui.image_label.setPixmap(QtGui.QPixmap("icons/add_img.PNG"))
+            self.ui.image_label.setPixmap(QtGui.QPixmap("icons/default_img.PNG"))
             self.set_tools_disabled()
             self.ui.list_widget.hide()
 

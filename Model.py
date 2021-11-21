@@ -51,9 +51,6 @@ class Model:
         current_element = self.images[index]
         self.update_img(current_element)
 
-    def get_list(self):
-        return self.images
-
     def delete_current_img(self, position):
         if self.images[position] == self.current_image:
             self.update_img("")
