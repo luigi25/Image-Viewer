@@ -104,7 +104,7 @@ class ImgViewer(QMainWindow):
     # update the current image to visualize when Enter key is pressed in list_widget selection.
     def keyPressEvent(self, key_event):
         if key_event.key() == Qt.Key_Return:
-            self.update_img()
+            self.view_img()
         else:
             super().keyPressEvent(key_event)
 
@@ -157,7 +157,7 @@ class ImgViewer(QMainWindow):
         self.ui.close_all_img.triggered.connect(self.close_all_images)
         self.ui.get_info.triggered.connect(self.show_img_info)
         self.ui.side_list.triggered.connect(self.toggle_img_list)
-        self.ui.list_widget.itemDoubleClicked.connect(self.update_img)
+        self.ui.list_widget.itemDoubleClicked.connect(self.view_img)
 
     # load an image from file_dialog if is not drag and drop in the window.
     def load_img(self, f_name=None):
@@ -182,7 +182,7 @@ class ImgViewer(QMainWindow):
                 item.setIcon(icon)
                 self.ui.list_widget.addItem(item)
                 self.ui.list_widget.setCurrentRow(len(self.ui.list_widget) - 1)
-                self.update_img()
+                self.view_img()
                 self.ui.list_widget.show()
 
         else:
@@ -194,11 +194,12 @@ class ImgViewer(QMainWindow):
             msg_box.exec_()
 
     # update the image to visualize from the list_widget and activate all tools.
-    def update_img(self):
+    def view_img(self):
         self.current_item = self.ui.list_widget.currentRow()
-        self.model.set_current_img(self.current_item)  # Get image from model.
-        self.set_aspect_ratio()
-        self.set_tools_enabled()
+        if self.model.images[self.current_item] != self.model.current_image:
+            self.model.set_current_img(self.current_item)
+            self.set_aspect_ratio()
+            self.set_tools_enabled()
 
     # keep aspect ratio with a maximum size of 512 for width/height.
     def set_aspect_ratio(self):

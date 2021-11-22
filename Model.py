@@ -56,7 +56,7 @@ class Model:
     # set the current image.
     def set_current_img(self, index):
         current_element = self.images[index]
-        self.current_image = current_element
+        self.update_img(current_element)
 
     # delete the current image and update self.images.
     def delete_current_img(self, position):
