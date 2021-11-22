@@ -7,17 +7,23 @@ from ImageWindowUI import Ui_MainWindow
 from gps_utils import gps_map
 
 
+# ExifViewer class.
 class ExifViewer(QDialog):
     def __init__(self, info, exif, parent=None):
         super(ExifViewer, self).__init__(parent)
+        # get the exif Dialog.
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+        # general info extracted from the current image.
         self.info = info
+        # exif data extracted from the current image.
         self.exif = exif
         self.fill_table()
 
+    # fill the table widget with the available infos.
     def fill_table(self):
         gps = self.exif.pop('GPSInfo') if ('GPSInfo' in self.exif) else None
+        # fill this tab if general info are available, else show a message.
         if self.info:
             self.ui.tableWidget.setRowCount(len(self.info))
             for r, tag in enumerate(self.info):
@@ -30,6 +36,7 @@ class ExifViewer(QDialog):
             no_info.setText(f"<h1>No Infos available for this image</h1>")
             self.ui.gridLayout1.addWidget(no_info, 0, 0, 1, 1)
 
+        # fill this tab if exif data are available, else show a message.
         if self.exif:
             if gps:
                 self.ui.tableWidget1.setRowCount(len(self.exif) + len(gps))
@@ -41,8 +48,8 @@ class ExifViewer(QDialog):
                     self.ui.tableWidget1.setItem(len(self.exif) + r, 0, QTableWidgetItem(tag))
                     self.ui.tableWidget1.setItem(len(self.exif) + r, 1, QTableWidgetItem(str(gps[tag])))
 
+                # visualize the map present in gps tag of exif data.
                 gps_location = gps_map(gps)
-                # visualize the map of gps info in exif data
                 self.ui.gridLayout3.addWidget(gps_location, 0, 0, 1, 1)
 
             else:
@@ -50,6 +57,11 @@ class ExifViewer(QDialog):
                 for r, tag in enumerate(self.exif):
                     self.ui.tableWidget1.setItem(r, 0, QTableWidgetItem(tag))
                     self.ui.tableWidget1.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
+
+            no_gps = QLabel()
+            no_gps.setAlignment(Qt.AlignCenter)
+            no_gps.setText(f"<h1>No GPS map available for this image</h1>")
+            self.ui.gridLayout3.addWidget(no_gps, 0, 0, 1, 1)
 
         else:
             self.ui.tableWidget1.hide()
@@ -63,31 +75,40 @@ class ExifViewer(QDialog):
             self.ui.gridLayout3.addWidget(no_gps, 0, 0, 1, 1)
 
 
+# ImgViewer class.
 class ImgViewer(QMainWindow):
     def __init__(self, model: Model):
         super(ImgViewer, self).__init__()
-
+        # get the MainWindow.
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        # get the model.
         self.model = model
+        # list of all file_names of the loaded images.
         self.file_names = list()
+        # current item of the loaded images list in list_widget.
         self.current_item = -1
+        # initially hide list_widget.
         self.ui.list_widget.hide()
 
         self.show()
         self.interaction()
 
+    # override resizeEvent to keep the image aspect ratio if any images is loaded or displayed.
+    # for the second case, the control is done if a tool is enabled.
     def resizeEvent(self, ev):
         if self.model.images and self.ui.close_option.isEnabled():
             self.set_aspect_ratio()
         super().resizeEvent(ev)
 
+    # update the current image to visualize when Enter key is pressed in list_widget selection.
     def keyPressEvent(self, key_event):
         if key_event.key() == Qt.Key_Return:
             self.update_img()
         else:
             super().keyPressEvent(key_event)
 
+    # drag and drop event is implement to drop one or more images.
     def dragEnterEvent(self, e):
         if len(e.mimeData().urls()) > 0 and e.mimeData().urls()[0].isLocalFile():
             qi = QFileInfo(e.mimeData().urls()[0].toLocalFile())
@@ -109,6 +130,7 @@ class ImgViewer(QMainWindow):
         else:
             e.ignore()
 
+    # right click to open the context menu and have all tools at hand.
     def contextMenuEvent(self, event):
         action = self.ui.context_menu.exec_(self.mapToGlobal(event.pos()))
         if action == self.ui.open_context:
@@ -126,6 +148,7 @@ class ImgViewer(QMainWindow):
         elif action == self.ui.list_context:
             self.toggle_img_list()
 
+    # allow to do every action in the program.
     def interaction(self):
         self.ui.action_open.triggered.connect(self.load_img)
         self.ui.ccw_rotate.triggered.connect(self.left_rotate)
@@ -136,8 +159,9 @@ class ImgViewer(QMainWindow):
         self.ui.side_list.triggered.connect(self.toggle_img_list)
         self.ui.list_widget.itemDoubleClicked.connect(self.update_img)
 
+    # load an image from file_dialog if is not drag and drop in the window.
     def load_img(self, f_name=None):
-        # choose f_name from file_dialog if is None
+        # choose f_name from file_dialog if is None.
         if not f_name:
             file_dialog = QFileDialog()
             options = file_dialog.Options()
@@ -147,7 +171,7 @@ class ImgViewer(QMainWindow):
             f_name, _ = file_dialog.getOpenFileName(file_dialog, "Open File", '/home',
                                                     "Images (*.jpg *.jpeg *.png *.JPG *.PNG)", options=options)
 
-        # check if f_name is selected, else a warning message is shown
+        # check if f_name is selected, else a warning message is shown.
         if f_name:
             if f_name not in self.file_names:
                 self.file_names.append(f_name)
@@ -169,12 +193,14 @@ class ImgViewer(QMainWindow):
             msg_box.setText("No image selected")
             msg_box.exec_()
 
+    # update the image to visualize from the list_widget and activate all tools.
     def update_img(self):
         self.current_item = self.ui.list_widget.currentRow()
-        self.model.set_current_img(self.current_item)  # Get image from model
+        self.model.set_current_img(self.current_item)  # Get image from model.
         self.set_aspect_ratio()
         self.set_tools_enabled()
 
+    # keep aspect ratio with a maximum size of 512 for width/height.
     def set_aspect_ratio(self):
         max_size = 512
         self.ui.image_label.setPixmap(
@@ -182,20 +208,23 @@ class ImgViewer(QMainWindow):
                 QSize(min(self.ui.image_label.width(), max_size), min(self.ui.image_label.height(), max_size)),
                 Qt.KeepAspectRatio, Qt.FastTransformation))
 
+    # rotate the current image to the left.
     def left_rotate(self):
         if self.model.current_image:
             rotation = QtGui.QTransform().rotate(-90.0)
             self.model.current_image = self.model.current_image.transformed(rotation, Qt.FastTransformation)
             self.set_aspect_ratio()
 
+    # rotate the current image to the right.
     def right_rotate(self):
         if self.model.current_image:
             rotation = QtGui.QTransform().rotate(90.0)
             self.model.current_image = self.model.current_image.transformed(rotation, Qt.FastTransformation)
             self.set_aspect_ratio()
 
+    # close the selected image in the list (if any) and the image is deleted from it;
+    # the tools are disabled and the default image is set in the window.
     def close_img(self):
-        # close image
         if len(self.ui.list_widget.selectedItems()) != 0:
             self.current_item = self.ui.list_widget.currentRow()
             self.model.delete_current_img(self.current_item)
@@ -206,15 +235,18 @@ class ImgViewer(QMainWindow):
             if not self.model.images:
                 self.ui.list_widget.hide()
 
+    # close all images (if any) and empty the images list;
+    # all tools are disabled and the default image is set in the window.
     def close_all_images(self):
         if len(self.ui.list_widget.selectedItems()) != 0:
-            self.model.empty_list()
+            self.model.empty_images_list()
             del self.file_names[:]
             self.ui.list_widget.clear()
             self.ui.image_label.setPixmap(QtGui.QPixmap("icons/default_img.PNG"))
             self.set_tools_disabled()
             self.ui.list_widget.hide()
 
+    # show the ExifViewer of the selected image in the list.
     def show_img_info(self):
         if self.model.current_image:
             self.current_item = self.ui.list_widget.currentRow()
@@ -223,13 +255,14 @@ class ImgViewer(QMainWindow):
             exif_viewer = ExifViewer(info, exif, self)
             exif_viewer.show()
 
+    # toggle the images list.
     def toggle_img_list(self):
-        # show/hide side list
         if self.ui.list_widget.isHidden():
             self.ui.list_widget.show()
         else:
             self.ui.list_widget.hide()
 
+    # set tools enabled.
     def set_tools_enabled(self):
         self.ui.ccw_rotate.setEnabled(True)
         self.ui.cw_rotate.setEnabled(True)
@@ -241,6 +274,7 @@ class ImgViewer(QMainWindow):
         self.ui.close_all_context.setEnabled(True)
         self.ui.info_context.setEnabled(True)
 
+    # set tools disabled.
     def set_tools_disabled(self):
         self.ui.ccw_rotate.setDisabled(True)
         self.ui.cw_rotate.setDisabled(True)

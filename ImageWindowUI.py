@@ -42,7 +42,8 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.list_widget.sizePolicy().hasHeightForWidth())
         self.list_widget.setSizePolicy(sizePolicy)
         self.list_widget.setMinimumSize(QtCore.QSize(200, 16777215))
-        self.list_widget.setMaximumSize(QtCore.QSize(200, 16777215))
+        # self.list_widget.setMaximumSize(QtCore.QSize(300, 16777215)) if (MainWindow.width() > 800) else
+        # self.list_widget.setMaximumSize(QtCore.QSize(200, 16777215))
         self.list_widget.setEditTriggers(QtWidgets.QAbstractItemView.SelectedClicked)
         self.list_widget.setProperty("isWrapping", False)
         self.list_widget.setWordWrap(False)
@@ -155,7 +156,7 @@ class Ui_MainWindow(object):
         self.info_context.setDisabled(True)
         self.list_context = self.context_menu.addAction("Toggle images list")
         self.list_context.setIcon(icon_list)
-        self.close_context = self.context_menu.addAction("Close image")
+        self.close_context = self.context_menu.addAction("Close this image")
         self.close_context.setIcon(icon_close)
         self.close_context.setDisabled(True)
         self.close_all_context = self.context_menu.addAction("Close all images")

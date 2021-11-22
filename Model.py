@@ -8,12 +8,16 @@ from PIL.ExifTags import TAGS, GPSTAGS
 
 class Model:
     def __init__(self):
-        # list of images
+        # list of loaded images.
         self.images = list()
+        # keep track of current image.
         self.current_image = None
+        # general info of current image.
         self.info = dict()
+        # exif data of current image.
         self.exif = dict()
 
+    # extract exif data from current image.
     def extract_exif(self, image):
         img = Image.open(image)
         if img._getexif():
@@ -29,6 +33,7 @@ class Model:
             self.exif = dict()
         return self.exif
 
+    # extract general info from current image.
     def extract_general_info(self, image):
         img = Image.open(image)
         if img:
@@ -44,17 +49,21 @@ class Model:
             self.info = dict()
         return self.info
 
+    # update the current image.
     def update_img(self, image):
         self.current_image = image
 
+    # set the current image.
     def set_current_img(self, index):
         current_element = self.images[index]
-        self.update_img(current_element)
+        self.current_image = current_element
 
+    # delete the current image and update self.images.
     def delete_current_img(self, position):
         if self.images[position] == self.current_image:
             self.update_img("")
         self.images = [v for i, v in enumerate(self.images) if i != position]
 
-    def empty_list(self):
+    # empty the images list.
+    def empty_images_list(self):
         del self.images[:]
