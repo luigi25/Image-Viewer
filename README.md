@@ -78,4 +78,4 @@ Toggle images list | `Ctrl+M`
 Get info | `Ctrl+I`
 
 An example of context menu and shortcuts is shown:
-![contextmenu.png](screen/contextmenu.png)
+
