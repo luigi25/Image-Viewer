@@ -23,7 +23,7 @@ class ExifViewer(QDialog):
     # fill the table widget with the available infos.
     def fill_table(self):
         gps = self.exif.pop('GPSInfo') if ('GPSInfo' in self.exif) else None
-        # fill this tab if general info are available, else show a message.
+        # fill this tab if general infos are available, else show a message.
         if self.info:
             self.ui.tableWidget.setRowCount(len(self.info))
             for r, tag in enumerate(self.info):
@@ -36,7 +36,7 @@ class ExifViewer(QDialog):
             no_info.setText(f"<h1>No Infos available for this image</h1>")
             self.ui.gridLayout1.addWidget(no_info, 0, 0, 1, 1)
 
-        # fill this tab if exif data are available, else show a message.
+        # fill this tab if exif data are available, else show a message in the window.
         if self.exif:
             if gps:
                 self.ui.tableWidget1.setRowCount(len(self.exif) + len(gps))
@@ -58,10 +58,10 @@ class ExifViewer(QDialog):
                     self.ui.tableWidget1.setItem(r, 0, QTableWidgetItem(tag))
                     self.ui.tableWidget1.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
 
-            no_gps = QLabel()
-            no_gps.setAlignment(Qt.AlignCenter)
-            no_gps.setText(f"<h1>No GPS map available for this image</h1>")
-            self.ui.gridLayout3.addWidget(no_gps, 0, 0, 1, 1)
+                no_gps = QLabel()
+                no_gps.setAlignment(Qt.AlignCenter)
+                no_gps.setText(f"<h1>No GPS map available for this image</h1>")
+                self.ui.gridLayout3.addWidget(no_gps, 0, 0, 1, 1)
 
         else:
             self.ui.tableWidget1.hide()
@@ -94,8 +94,8 @@ class ImgViewer(QMainWindow):
         self.show()
         self.interaction()
 
-    # override resizeEvent to keep the image aspect ratio if any images is loaded or displayed.
-    # for the second case, the control is done if a tool is enabled.
+    # override resizeEvent to keep the image aspect ratio if any images is loaded or displayed;
+    # for the second case, the control is done by checking if just a tool is enabled.
     def resizeEvent(self, ev):
         if self.model.images and self.ui.close_option.isEnabled():
             self.set_aspect_ratio()
