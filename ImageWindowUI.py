@@ -163,7 +163,7 @@ class Ui_MainWindow(object):
         self.info_context.setDisabled(True)
         self.list_context = self.context_menu.addAction("Toggle images list")
         self.list_context.setIcon(icon_list)
-        self.close_context = self.context_menu.addAction("Close this image")
+        self.close_context = self.context_menu.addAction("Close selected image")
         self.close_context.setIcon(icon_close)
         self.close_context.setDisabled(True)
         self.close_all_context = self.context_menu.addAction("Close all images")
@@ -186,9 +186,9 @@ class Ui_MainWindow(object):
         self.action_open.setStatusTip(_translate("MainWindow", "Select the image to open"))
         self.action_open.setShortcut(_translate("MainWindow", "Ctrl+O"))
         self.open_context.setShortcut(_translate("MainWindow", "Ctrl+O"))
-        self.action_current.setText(_translate("MainWindow", "Current"))
-        self.close_img.setText(_translate("MainWindow", "Current"))
-        self.close_img.setStatusTip(_translate("MainWindow", "Close the current image"))
+        self.action_current.setText(_translate("MainWindow", "Selected"))
+        self.close_img.setText(_translate("MainWindow", "Selected"))
+        self.close_img.setStatusTip(_translate("MainWindow", "Close the selected image"))
         self.close_img.setShortcut(_translate("MainWindow", "Ctrl+W"))
         self.close_context.setShortcut(_translate("MainWindow", "Ctrl+W"))
         self.close_all_img.setText(_translate("MainWindow", "All"))
@@ -210,10 +210,10 @@ class Ui_MainWindow(object):
         self.side_list.setText(_translate("MainWindow", "Images list"))
         self.side_list.setStatusTip(_translate("MainWindow", "Toggle the list of open images"))
         self.side_list.setShortcut(_translate("MainWindow", "Ctrl+M"))
+        self.list_widget.setStatusTip(_translate("MainWindow", "The list of open images"))
         self.list_context.setShortcut(_translate("MainWindow", "Ctrl+M"))
         self.image_label.setStatusTip(
             _translate("MainWindow", 'Go to "File" and click "Open" or press "Ctrl+O" to open an image'))
-        self.list_widget.setStatusTip(_translate("MainWindow", "The list of open images"))
 
 
 if __name__ == "__main__":
