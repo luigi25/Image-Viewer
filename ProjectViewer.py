@@ -11,19 +11,19 @@ from gps_utils import gps_map
 class ExifViewer(QDialog):
     def __init__(self, info, exif, parent=None):
         super(ExifViewer, self).__init__(parent)
-        # get the exif Dialog.
+        # get the Ui_Dialog.
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
-        # general info extracted from the current image.
+        # general info extracted from the viewed image.
         self.info = info
-        # exif data extracted from the current image.
+        # exif data extracted from the viewed image.
         self.exif = exif
         self.fill_table()
 
-    # fill the table widget with the available infos.
+    # fill the tables widgets with the available infos.
     def fill_table(self):
         gps = self.exif.pop('GPSInfo') if ('GPSInfo' in self.exif) else None
-        # fill this tab if general infos are available, else show a message.
+        # fill this tab if general infos are available, else show a message in the window.
         if self.info:
             self.ui.tableWidget.setRowCount(len(self.info))
             for r, tag in enumerate(self.info):
@@ -34,7 +34,7 @@ class ExifViewer(QDialog):
             no_info = QLabel()
             no_info.setAlignment(Qt.AlignCenter)
             no_info.setText(f"<h1>No Infos available for this image</h1>")
-            self.ui.gridLayout1.addWidget(no_info, 0, 0, 1, 1)
+            self.ui.gridLayout.addWidget(no_info, 0, 0, 1, 1)
 
         # fill this tab if exif data are available, else show a message in the window.
         if self.exif:
@@ -50,18 +50,17 @@ class ExifViewer(QDialog):
 
                 # visualize the map present in gps tag of exif data.
                 gps_location = gps_map(gps)
-                self.ui.gridLayout3.addWidget(gps_location, 0, 0, 1, 1)
-
+                self.ui.gridLayout2.addWidget(gps_location, 0, 0, 1, 1)
             else:
                 self.ui.tableWidget1.setRowCount(len(self.exif))
                 for r, tag in enumerate(self.exif):
                     self.ui.tableWidget1.setItem(r, 0, QTableWidgetItem(tag))
                     self.ui.tableWidget1.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
-
+                # show a message in the window.
                 no_gps = QLabel()
                 no_gps.setAlignment(Qt.AlignCenter)
                 no_gps.setText(f"<h1>No GPS map available for this image</h1>")
-                self.ui.gridLayout3.addWidget(no_gps, 0, 0, 1, 1)
+                self.ui.gridLayout2.addWidget(no_gps, 0, 0, 1, 1)
 
         else:
             self.ui.tableWidget1.hide()
@@ -71,22 +70,20 @@ class ExifViewer(QDialog):
             no_gps = QLabel()
             no_gps.setAlignment(Qt.AlignCenter)
             no_gps.setText(f"<h1>No GPS map available for this image</h1>")
-            self.ui.gridLayout2.addWidget(no_exif, 0, 0, 1, 1)
-            self.ui.gridLayout3.addWidget(no_gps, 0, 0, 1, 1)
+            self.ui.gridLayout1.addWidget(no_exif, 0, 0, 1, 1)
+            self.ui.gridLayout2.addWidget(no_gps, 0, 0, 1, 1)
 
 
 # ImgViewer class.
 class ImgViewer(QMainWindow):
     def __init__(self, model: Model):
         super(ImgViewer, self).__init__()
-        # get the MainWindow.
+        # get the Ui_MainWindow.
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         # get the model.
         self.model = model
-        # list of all file_names of the loaded images.
-        self.file_names = list()
-        # current item of the loaded images list in list_widget.
+        # current item from the loaded images list in list_widget.
         self.current_item = -1
         # initially hide list_widget.
         self.ui.list_widget.hide()
@@ -94,14 +91,14 @@ class ImgViewer(QMainWindow):
         self.show()
         self.interaction()
 
-    # override resizeEvent to keep the image aspect ratio if any images is loaded or displayed;
+    # override resizeEvent to keep the image aspect ratio if any images is loaded and displayed;
     # for the second case, the control is done by checking if just a tool is enabled.
     def resizeEvent(self, ev):
         if self.model.images and self.ui.close_option.isEnabled():
             self.set_aspect_ratio()
         super().resizeEvent(ev)
 
-    # update the current image to visualize when Enter key is pressed in list_widget selection.
+    # update the current image to visualize when Enter key is pressed in list_widget section.
     def keyPressEvent(self, key_event):
         if key_event.key() == Qt.Key_Return:
             self.view_img()
@@ -148,7 +145,7 @@ class ImgViewer(QMainWindow):
         elif action == self.ui.list_context:
             self.toggle_img_list()
 
-    # allow to do every action in the program.
+    # allow to do every interaction in the window.
     def interaction(self):
         self.ui.action_open.triggered.connect(self.load_img)
         self.ui.ccw_rotate.triggered.connect(self.left_rotate)
@@ -173,8 +170,9 @@ class ImgViewer(QMainWindow):
 
         # check if f_name is selected, else a warning message is shown.
         if f_name:
-            if f_name not in self.file_names:
-                self.file_names.append(f_name)
+            if f_name not in self.model.file_names:
+                # load the f_name and the image in the model and visualize the image.
+                self.model.file_names.append(f_name)
                 self.model.images.append(QtGui.QPixmap(f_name))
                 item = QtWidgets.QListWidgetItem(f_name.split('/')[-1])
                 icon = QtGui.QIcon()
@@ -193,7 +191,8 @@ class ImgViewer(QMainWindow):
             msg_box.setText("No image selected")
             msg_box.exec_()
 
-    # update the image to visualize from the list_widget and activate all tools.
+    # update the image to visualize selected from list_widget and activate all tools;
+    # check if the current model image has already been chosen.
     def view_img(self):
         self.current_item = self.ui.list_widget.currentRow()
         if self.model.images[self.current_item] != self.model.current_image:
@@ -223,16 +222,17 @@ class ImgViewer(QMainWindow):
             self.model.current_image = self.model.current_image.transformed(rotation, Qt.FastTransformation)
             self.set_aspect_ratio()
 
-    # close the selected image in the list (if any) and the image is deleted from it;
-    # the tools are disabled and the default image is set in the window.
+    # close and delete the selected image in the list (if any);
+    # the tools are disabled and the default image is set in the window if is deleted the viewed image.
     def close_img(self):
         if len(self.ui.list_widget.selectedItems()) != 0:
             self.current_item = self.ui.list_widget.currentRow()
-            self.model.delete_current_img(self.current_item)
+            self.model.delete_selected_img(self.current_item)
             self.ui.list_widget.takeItem(self.current_item)
-            self.file_names.pop(self.current_item)
-            self.ui.image_label.setPixmap(QtGui.QPixmap("icons/default_img.PNG"))
-            self.set_tools_disabled()
+            # set default image if the viewed image is deleted.
+            if not self.model.current_image:
+                self.ui.image_label.setPixmap(QtGui.QPixmap("icons/default_img.PNG"))
+                self.set_tools_disabled()
             if not self.model.images:
                 self.ui.list_widget.hide()
 
@@ -241,18 +241,17 @@ class ImgViewer(QMainWindow):
     def close_all_images(self):
         if len(self.ui.list_widget.selectedItems()) != 0:
             self.model.empty_images_list()
-            del self.file_names[:]
             self.ui.list_widget.clear()
             self.ui.image_label.setPixmap(QtGui.QPixmap("icons/default_img.PNG"))
             self.set_tools_disabled()
             self.ui.list_widget.hide()
 
-    # show the ExifViewer of the selected image in the list.
+    # show the ExifViewer of the viewed image.
     def show_img_info(self):
         if self.model.current_image:
-            self.current_item = self.ui.list_widget.currentRow()
-            info = self.model.extract_general_info(self.file_names[self.current_item])
-            exif = self.model.extract_exif(self.file_names[self.current_item])
+            current_index = self.model.images.index(self.model.current_image)
+            info = self.model.extract_general_info(self.model.file_names[current_index])
+            exif = self.model.extract_exif(self.model.file_names[current_index])
             exif_viewer = ExifViewer(info, exif, self)
             exif_viewer.show()
 

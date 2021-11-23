@@ -8,6 +8,7 @@ from ProjectViewer import ImgViewer
 def main():
     app = QApplication(sys.argv)
     app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+    # the singleton model instance.
     model = Model()
     img_viewer = ImgViewer(model)
     img_viewer.show()

@@ -8,16 +8,18 @@ from PIL.ExifTags import TAGS, GPSTAGS
 
 class Model:
     def __init__(self):
-        # list of loaded images.
+        # list of the loaded images.
         self.images = list()
-        # keep track of current image.
+        # list of all file_names of the loaded images.
+        self.file_names = list()
+        # keep track of the current image.
         self.current_image = None
-        # general info of current image.
+        # general info of the viewed image.
         self.info = dict()
-        # exif data of current image.
+        # exif data of the viewed image.
         self.exif = dict()
 
-    # extract exif data from current image.
+    # extract exif data from the viewed image.
     def extract_exif(self, image):
         img = Image.open(image)
         if img._getexif():
@@ -33,7 +35,7 @@ class Model:
             self.exif = dict()
         return self.exif
 
-    # extract general info from current image.
+    # extract general info from the viewed image.
     def extract_general_info(self, image):
         img = Image.open(image)
         if img:
@@ -58,12 +60,15 @@ class Model:
         current_element = self.images[index]
         self.update_img(current_element)
 
-    # delete the current image and update self.images.
-    def delete_current_img(self, position):
+    # delete the selected image (and its file_name) in the list and update self.current_image if necessary.
+    def delete_selected_img(self, position):
         if self.images[position] == self.current_image:
-            self.update_img("")
-        self.images = [v for i, v in enumerate(self.images) if i != position]
+            self.update_img(None)
+        self.images.pop(position)
+        self.file_names.pop(position)
 
-    # empty the images list.
+    # empty the images list and file_names list.
     def empty_images_list(self):
         del self.images[:]
+        del self.file_names[:]
+

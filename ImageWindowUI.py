@@ -3,6 +3,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        # MainWindow and its properties.
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(820, 550)
         MainWindow.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
@@ -18,8 +19,8 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
-        self.context_menu = QtWidgets.QMenu(MainWindow)
 
+        # label that contains the default image and all images that are subsequently loaded.
         self.image_label = QtWidgets.QLabel(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -35,6 +36,7 @@ class Ui_MainWindow(object):
         self.image_label.setObjectName("image_label")
         self.gridLayout.addWidget(self.image_label, 0, 2, 1, 1)
 
+        # list_widget that contains all images that are loaded.
         self.list_widget = QtWidgets.QListWidget(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -55,6 +57,7 @@ class Ui_MainWindow(object):
         spacerItem = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem, 0, 1, 1, 1)
 
+        # menubar creation, addition of all tools and relative icons.
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 873, 26))
@@ -82,8 +85,8 @@ class Ui_MainWindow(object):
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_open.setIcon(icon_open)
         self.action_open.setObjectName("action_open")
-        self.actionCurrent = QtWidgets.QAction(MainWindow)
-        self.actionCurrent.setObjectName("actionCurrent")
+        self.action_current = QtWidgets.QAction(MainWindow)
+        self.action_current.setObjectName("action_current")
         self.close_img = QtWidgets.QAction(MainWindow)
         self.close_img.setObjectName("close_img")
         icon_close = QtGui.QIcon()
@@ -137,11 +140,16 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menu_file.menuAction())
         self.menubar.addAction(self.tools.menuAction())
         self.menubar.addAction(self.view.menuAction())
+
+        # set disabled initially with default image.
         self.close_option.setDisabled(True)
         self.cw_rotate.setDisabled(True)
         self.ccw_rotate.setDisabled(True)
         self.get_info.setDisabled(True)
 
+        # context_menu creation, addition of all tools (same as before) and relative icons;
+        # set disabled initially with default image.
+        self.context_menu = QtWidgets.QMenu(MainWindow)
         self.open_context = self.context_menu.addAction("Open an image")
         self.open_context.setIcon(icon_open)
         self.cw_rotate_context = self.context_menu.addAction("90° clockwise")
@@ -178,7 +186,7 @@ class Ui_MainWindow(object):
         self.action_open.setStatusTip(_translate("MainWindow", "Select the image to open"))
         self.action_open.setShortcut(_translate("MainWindow", "Ctrl+O"))
         self.open_context.setShortcut(_translate("MainWindow", "Ctrl+O"))
-        self.actionCurrent.setText(_translate("MainWindow", "Current"))
+        self.action_current.setText(_translate("MainWindow", "Current"))
         self.close_img.setText(_translate("MainWindow", "Current"))
         self.close_img.setStatusTip(_translate("MainWindow", "Close the current image"))
         self.close_img.setShortcut(_translate("MainWindow", "Ctrl+W"))
