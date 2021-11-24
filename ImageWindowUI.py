@@ -163,7 +163,7 @@ class Ui_MainWindow(object):
         self.info_context.setDisabled(True)
         self.list_context = self.context_menu.addAction("Toggle images list")
         self.list_context.setIcon(icon_list)
-        self.close_context = self.context_menu.addAction("Close displayed image")
+        self.close_context = self.context_menu.addAction("Close current image")
         self.close_context.setIcon(icon_close)
         self.close_context.setDisabled(True)
         self.close_all_context = self.context_menu.addAction("Close all images")

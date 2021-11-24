@@ -182,8 +182,6 @@ class ImgViewer(QMainWindow):
                 self.ui.list_widget.setCurrentRow(len(self.ui.list_widget) - 1)
                 self.ui.list_widget.show()
                 self.view_img()
-                self.current_item = self.model.images.index(self.model.current_image)
-
         else:
             msg_box = QMessageBox()
             msg_box.setIcon(QMessageBox.Warning)
