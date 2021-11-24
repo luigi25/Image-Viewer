@@ -221,7 +221,7 @@ class ImgViewer(QMainWindow):
             self.model.current_image = self.model.current_image.transformed(rotation, Qt.FastTransformation)
             self.set_aspect_ratio()
 
-    # close and delete the displayed image in the list (if any);
+    # close and delete the displayed image (if any);
     # the tools are disabled and the default image is set in the window if is deleted the displayed image.
     def close_img(self):
         if self.model.current_image:

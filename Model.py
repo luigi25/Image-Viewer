@@ -60,15 +60,15 @@ class Model:
         current_element = self.images[index]
         self.update_img(current_element)
 
-    # delete the displayed image (and its file_name) in the list and update self.current_image if necessary.
+    # delete the displayed image (and its file_name) and set self.current_image None if necessary.
     def delete_img(self, position):
         if self.images[position] == self.current_image:
             self.update_img(None)
         self.images.pop(position)
         self.file_names.pop(position)
 
-    # empty the images list and file_names list.
+    # set self.current_image None, empty the images and file_names list.
     def empty_images_list(self):
         del self.images[:]
         del self.file_names[:]
-
+        self.update_img(None)
