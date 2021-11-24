@@ -14,9 +14,9 @@ class ExifViewer(QDialog):
         # get the Ui_Dialog.
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
-        # general info extracted from the viewed image.
+        # general info extracted from the displayed image.
         self.info = info
-        # exif data extracted from the viewed image.
+        # exif data extracted from the displayed image.
         self.exif = exif
         self.fill_table()
 
@@ -154,7 +154,7 @@ class ImgViewer(QMainWindow):
         self.ui.close_all_img.triggered.connect(self.close_all_images)
         self.ui.get_info.triggered.connect(self.show_img_info)
         self.ui.side_list.triggered.connect(self.toggle_img_list)
-        self.ui.list_widget.itemDoubleClicked.connect(self.view_img)
+        self.ui.list_widget.itemClicked.connect(self.view_img)
 
     # load an image from file_dialog if is not drag and drop in the window.
     def load_img(self, f_name=None):
@@ -171,7 +171,7 @@ class ImgViewer(QMainWindow):
         # check if f_name is selected, else a warning message is shown.
         if f_name:
             if f_name not in self.model.file_names:
-                # load the f_name and the image in the model and visualize the image.
+                # load the f_name and the image in the model and display the image.
                 self.model.file_names.append(f_name)
                 self.model.images.append(QtGui.QPixmap(f_name))
                 item = QtWidgets.QListWidgetItem(f_name.split('/')[-1])
@@ -180,8 +180,9 @@ class ImgViewer(QMainWindow):
                 item.setIcon(icon)
                 self.ui.list_widget.addItem(item)
                 self.ui.list_widget.setCurrentRow(len(self.ui.list_widget) - 1)
-                self.view_img()
                 self.ui.list_widget.show()
+                self.view_img()
+                self.current_item = self.model.images.index(self.model.current_image)
 
         else:
             msg_box = QMessageBox()
@@ -191,7 +192,7 @@ class ImgViewer(QMainWindow):
             msg_box.setText("No image selected")
             msg_box.exec_()
 
-    # update the image to visualize selected from list_widget and activate all tools;
+    # update the image to display by selecting from list_widget and activate all tools;
     # check if the current model image has already been chosen.
     def view_img(self):
         self.current_item = self.ui.list_widget.currentRow()
@@ -222,36 +223,35 @@ class ImgViewer(QMainWindow):
             self.model.current_image = self.model.current_image.transformed(rotation, Qt.FastTransformation)
             self.set_aspect_ratio()
 
-    # close and delete the selected image in the list (if any);
-    # the tools are disabled and the default image is set in the window if is deleted the viewed image.
+    # close and delete the displayed image in the list (if any);
+    # the tools are disabled and the default image is set in the window if is deleted the displayed image.
     def close_img(self):
-        if len(self.ui.list_widget.selectedItems()) != 0:
-            self.current_item = self.ui.list_widget.currentRow()
-            self.model.delete_selected_img(self.current_item)
+        if self.model.current_image:
+            self.model.delete_img(self.current_item)
             self.ui.list_widget.takeItem(self.current_item)
-            # set default image if the viewed image is deleted.
-            if not self.model.current_image:
+            # set default image if all images are deleted.
+            if self.model.images:
+                self.view_img()
+            else:
                 self.ui.image_label.setPixmap(QtGui.QPixmap("icons/default_img.PNG"))
                 self.set_tools_disabled()
-            if not self.model.images:
                 self.ui.list_widget.hide()
 
     # close all images (if any) and empty the images list;
     # all tools are disabled and the default image is set in the window.
     def close_all_images(self):
-        if len(self.ui.list_widget.selectedItems()) != 0:
+        if self.model.current_image:
             self.model.empty_images_list()
             self.ui.list_widget.clear()
             self.ui.image_label.setPixmap(QtGui.QPixmap("icons/default_img.PNG"))
             self.set_tools_disabled()
             self.ui.list_widget.hide()
 
-    # show the ExifViewer of the viewed image.
+    # show the ExifViewer of the displayed image.
     def show_img_info(self):
         if self.model.current_image:
-            current_index = self.model.images.index(self.model.current_image)
-            info = self.model.extract_general_info(self.model.file_names[current_index])
-            exif = self.model.extract_exif(self.model.file_names[current_index])
+            info = self.model.extract_general_info(self.model.file_names[self.current_item])
+            exif = self.model.extract_exif(self.model.file_names[self.current_item])
             exif_viewer = ExifViewer(info, exif, self)
             exif_viewer.show()
 

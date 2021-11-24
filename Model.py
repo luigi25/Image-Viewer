@@ -14,12 +14,12 @@ class Model:
         self.file_names = list()
         # keep track of the current image.
         self.current_image = None
-        # general info of the viewed image.
+        # general info of the displayed image.
         self.info = dict()
-        # exif data of the viewed image.
+        # exif data of the displayed image.
         self.exif = dict()
 
-    # extract exif data from the viewed image.
+    # extract exif data from the displayed image.
     def extract_exif(self, image):
         img = Image.open(image)
         if img._getexif():
@@ -35,7 +35,7 @@ class Model:
             self.exif = dict()
         return self.exif
 
-    # extract general info from the viewed image.
+    # extract general info from the displayed image.
     def extract_general_info(self, image):
         img = Image.open(image)
         if img:
@@ -60,8 +60,8 @@ class Model:
         current_element = self.images[index]
         self.update_img(current_element)
 
-    # delete the selected image (and its file_name) in the list and update self.current_image if necessary.
-    def delete_selected_img(self, position):
+    # delete the displayed image (and its file_name) in the list and update self.current_image if necessary.
+    def delete_img(self, position):
         if self.images[position] == self.current_image:
             self.update_img(None)
         self.images.pop(position)
