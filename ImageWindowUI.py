@@ -204,7 +204,7 @@ class Ui_MainWindow(object):
         self.ccw_rotate.setShortcut(_translate("MainWindow", "Ctrl+L"))
         self.ccw_rotate_context.setShortcut(_translate("MainWindow", "Ctrl+L"))
         self.get_info.setText(_translate("MainWindow", "Get info"))
-        self.get_info.setStatusTip(_translate("MainWindow", "Get general info and exif data of the displayed image"))
+        self.get_info.setStatusTip(_translate("MainWindow", "Get general info and exif data of the current image"))
         self.get_info.setShortcut(_translate("MainWindow", "Ctrl+I"))
         self.info_context.setShortcut(_translate("MainWindow", "Ctrl+I"))
         self.side_list.setText(_translate("MainWindow", "Images list"))
