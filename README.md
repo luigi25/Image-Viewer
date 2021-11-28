@@ -18,7 +18,7 @@ python3 main.py
 ```
 
 The MainWindow presents itself like this:
-![init.PNG](screen/init.PNG)
+![default.PNG](screen/default.PNG)
 
 ## Overview
 Exchangeable image file format (**Exif**) is a standard that specifies the formats for images, sound, and ancillary tags used by digital cameras, smartphones, scanners and other systems handling image and sound files recorded by digital cameras. 
@@ -78,4 +78,4 @@ Toggle images list | `Ctrl+M`
 Get info | `Ctrl+I`
 
 An example of context menu and shortcuts is shown:
-![option_menu.png](screen/option_menu.png)
+![menu.png](screen/menu.png)
