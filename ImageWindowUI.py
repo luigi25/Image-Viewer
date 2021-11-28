@@ -213,7 +213,7 @@ class Ui_MainWindow(object):
         self.list_widget.setStatusTip(_translate("MainWindow", "The list of open images"))
         self.list_context.setShortcut(_translate("MainWindow", "Ctrl+M"))
         self.image_label.setStatusTip(
-            _translate("MainWindow", 'Go to "File" and click "Open" or press "Ctrl+O" to open an image'))
+            _translate("MainWindow", 'Press "Ctrl+O" to open an image or drop some here'))
 
 
 if __name__ == "__main__":

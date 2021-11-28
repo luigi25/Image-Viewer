@@ -15,14 +15,14 @@ class Ui_Dialog(object):
         Dialog.setWindowIcon(QtGui.QIcon('icons/database.png'))
 
         # set the grid layout and the tabWidget where the infos, exif data
-        # and gps map of the selected image will be visualized.
+        # and gps map of the selected image will be displayed.
         self.gridLayoutTabWidget = QtWidgets.QGridLayout(Dialog)
         self.gridLayoutTabWidget.setObjectName("gridLayoutTabWidget")
         self.tabWidget = QtWidgets.QTabWidget(Dialog)
         self.tabWidget.setTabBarAutoHide(True)
         self.tabWidget.setObjectName("tabWidget")
 
-        # first tab where the infos of the selected image are visualized.
+        # first tab where the infos of the selected image are displayed.
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
         self.gridLayout = QtWidgets.QGridLayout(self.tab)
@@ -52,7 +52,7 @@ class Ui_Dialog(object):
         self.gridLayout.addWidget(self.tableWidget, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab, "")
 
-        # second tab where exif data of the selected image are visualized.
+        # second tab where exif data of the selected image are displayed.
         self.tab1 = QtWidgets.QWidget()
         self.tab1.setObjectName("tab1")
         self.gridLayout1 = QtWidgets.QGridLayout(self.tab1)
@@ -82,7 +82,7 @@ class Ui_Dialog(object):
         self.gridLayout1.addWidget(self.tableWidget1, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab1, "")
 
-        # third tab where the gps map of the selected image is visualized.
+        # third tab where the gps map of the selected image is displayed.
         self.tab2 = QtWidgets.QWidget()
         self.tab2.setObjectName("tab2")
         self.gridLayout2 = QtWidgets.QGridLayout(self.tab2)

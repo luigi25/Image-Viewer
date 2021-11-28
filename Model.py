@@ -14,12 +14,12 @@ class Model:
         self.file_names = list()
         # keep track of the current image.
         self.current_image = None
-        # general info of the displayed image.
+        # general info of the current image.
         self.info = dict()
-        # exif data of the displayed image.
+        # exif data of the current image.
         self.exif = dict()
 
-    # extract exif data from the displayed image.
+    # extract exif data from the current image.
     def extract_exif(self, image):
         img = Image.open(image)
         if img._getexif():
@@ -35,7 +35,7 @@ class Model:
             self.exif = dict()
         return self.exif
 
-    # extract general info from the displayed image.
+    # extract general info from the current image.
     def extract_general_info(self, image):
         img = Image.open(image)
         if img:
@@ -60,7 +60,7 @@ class Model:
         current_element = self.images[index]
         self.update_img(current_element)
 
-    # delete the displayed image (and its file_name) and set self.current_image None if necessary.
+    # delete the current image (and its file_name) and set self.current_image None if necessary.
     def delete_img(self, position):
         if self.images[position] == self.current_image:
             self.update_img(None)

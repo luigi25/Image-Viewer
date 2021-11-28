@@ -14,9 +14,9 @@ class ExifViewer(QDialog):
         # get the Ui_Dialog.
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
-        # general info extracted from the displayed image.
+        # general info extracted from the current image.
         self.info = info
-        # exif data extracted from the displayed image.
+        # exif data extracted from the current image.
         self.exif = exif
         self.fill_table()
 
@@ -221,8 +221,8 @@ class ImgViewer(QMainWindow):
             self.model.current_image = self.model.current_image.transformed(rotation, Qt.FastTransformation)
             self.set_aspect_ratio()
 
-    # close and delete the displayed image (if any);
-    # the tools are disabled and the default image is set in the window if is deleted the displayed image.
+    # close and delete the current image (if any);
+    # the tools are disabled and the default image is set in the window if all loaded images are deleted.
     def close_img(self):
         if self.model.current_image:
             self.model.delete_img(self.current_item)
@@ -245,7 +245,7 @@ class ImgViewer(QMainWindow):
             self.set_tools_disabled()
             self.ui.list_widget.hide()
 
-    # show the ExifViewer of the displayed image.
+    # show the ExifViewer of the current image.
     def show_img_info(self):
         if self.model.current_image:
             info = self.model.extract_general_info(self.model.file_names[self.current_item])
