@@ -188,7 +188,7 @@ class Ui_MainWindow(object):
         self.open_context.setShortcut(_translate("MainWindow", "Ctrl+O"))
         self.action_current.setText(_translate("MainWindow", "Selected"))
         self.close_img.setText(_translate("MainWindow", "Current"))
-        self.close_img.setStatusTip(_translate("MainWindow", "Close the displayed image"))
+        self.close_img.setStatusTip(_translate("MainWindow", "Close the current image"))
         self.close_img.setShortcut(_translate("MainWindow", "Ctrl+W"))
         self.close_context.setShortcut(_translate("MainWindow", "Ctrl+W"))
         self.close_all_img.setText(_translate("MainWindow", "All"))
@@ -208,12 +208,12 @@ class Ui_MainWindow(object):
         self.get_info.setShortcut(_translate("MainWindow", "Ctrl+I"))
         self.info_context.setShortcut(_translate("MainWindow", "Ctrl+I"))
         self.side_list.setText(_translate("MainWindow", "Images list"))
-        self.side_list.setStatusTip(_translate("MainWindow", "Toggle the list of open images"))
+        self.side_list.setStatusTip(_translate("MainWindow", "Toggle the list of loaded images"))
         self.side_list.setShortcut(_translate("MainWindow", "Ctrl+M"))
-        self.list_widget.setStatusTip(_translate("MainWindow", "The list of open images"))
+        self.list_widget.setStatusTip(_translate("MainWindow", "List of loaded images"))
         self.list_context.setShortcut(_translate("MainWindow", "Ctrl+M"))
         self.image_label.setStatusTip(
-            _translate("MainWindow", 'Press "Ctrl+O" to open an image or drop some here'))
+            _translate("MainWindow", 'Press Ctrl+O to open an image or drop some here'))
 
 
 if __name__ == "__main__":

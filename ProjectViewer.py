@@ -75,9 +75,9 @@ class ExifViewer(QDialog):
 
 
 # ImgViewer class.
-class ImgViewer(QMainWindow):
+class ImageViewer(QMainWindow):
     def __init__(self, model: Model):
-        super(ImgViewer, self).__init__()
+        super(ImageViewer, self).__init__()
         # get the Ui_MainWindow.
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -91,10 +91,9 @@ class ImgViewer(QMainWindow):
         self.show()
         self.interaction()
 
-    # override resizeEvent to keep the image aspect ratio if any images is loaded and displayed;
-    # for the second case, the control is done by checking if just a tool is enabled.
+    # override resizeEvent to keep the image aspect ratio if any images is loaded.
     def resizeEvent(self, ev):
-        if self.model.images and self.ui.close_option.isEnabled():
+        if self.model.images:
             self.set_aspect_ratio()
         super().resizeEvent(ev)
 

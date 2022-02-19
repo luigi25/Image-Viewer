@@ -11,7 +11,7 @@ def convert_to_degrees(value):
     return d + m + s
 
 
-# allow to calculate latitude, longitude and create the relative map in those coordinates.
+# allow calculating latitude, longitude and create the relative map in those coordinates.
 def gps_map(gps_exif):
     latitude, longitude = None, None
 
