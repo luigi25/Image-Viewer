@@ -18,6 +18,8 @@ python main.py
 ```
 
 The MainWindow presents itself like this:
+
+
 ![default.PNG](screen/default.PNG)
 
 ## Overview
@@ -84,4 +86,6 @@ Toggle images list | `Ctrl+M`
 Get info | `Ctrl+I`
 
 An example of context menu and shortcuts is shown:
+
+
 ![menu.png](screen/menu.png)
