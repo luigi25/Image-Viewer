@@ -59,8 +59,14 @@ The image to visualize can be updated through a double click or Enter Key on the
 ### Get Info
 The user can view general information and exif data of the photo displayed in the MainWindow through "View -> Get info" in the menu bar.
 The ExifWindow will show up as follows:
+
+
 ![info.PNG](screen/info.PNG)
+
+
 ![exif.PNG](screen/exif.PNG)
+
+
 ![gps.PNG](screen/gps.PNG)
 
 **All features are at hand with a right click through a context menu**.
