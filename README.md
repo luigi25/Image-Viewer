@@ -22,6 +22,8 @@ The MainWindow presents itself like this:
 
 ![default.PNG](screen/default.PNG)
 
+There are some images to test the viewer in the **testing images** folder.
+
 ## Overview
 Exchangeable image file format (**Exif**) is a standard that specifies the formats for images, sound, and ancillary tags used by digital cameras, smartphones, scanners and other systems handling image and sound files recorded by digital cameras. 
 The specification uses the following existing file formats with the addition of specific metadata tags: JPEG for compressed image files, TIFF for uncompressed image files, and RIFF WAV for audio files.
