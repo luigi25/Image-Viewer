@@ -12,9 +12,9 @@ Package | Version
 [QDarkStylesheet](https://pypi.org/project/QDarkStyle) | 3.0.2
 
 ## Run
-From the project's directory run the python main file:
+From the project's directory run the main.py file in order to start the Image-Viewer:
 ```
-python3 main.py
+python main.py
 ```
 
 The MainWindow presents itself like this:
