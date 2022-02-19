@@ -43,6 +43,8 @@ From the starting window a message is displayed to help you load the images and 
 In the file dialog that appears you can choose jpeg or png images.
 The user can also drag one or more images into the window: if the user drags more than one photo, the list below will be filled and the last photo will be uploaded.
 The MainWindow will show up as follows:
+
+
 ![load.PNG](screen/load.PNG)
 
 ### Remove Image
