@@ -1,5 +1,5 @@
 # Image-Viewer
-Image Viewer application allow to show and manage png and jpeg images; it is implemented for HCI course at Università degli Studi di Firenze.
+Image Viewer application allows to show and manage png and jpeg files; it is implemented for HCI course at Università degli Studi di Firenze.
 
 ## Prerequisites
 Package | Version
@@ -35,15 +35,15 @@ The metadata tags defined in the Exif standard cover a broad spectrum:
  - copyright information.
 
 ## Functionalities
-In this section are listed all the functions available in the Image Viewer.
+In this section are listed all the functions available in the Image-Viewer.
 
 ### Open Image
-From the starting window a message is displayed to help you load the images and there are three possible ways to do this:
+From the starting window a message is displayed to help you load the images and understand what to do, indeed there are three possible ways to do this:
 * Use the **hotkey** "Crtl+O";
 * **Go to** "File -> Open";
 * **Right click** and choose "Open an image".
-In the file dialog that appears you can choose jpeg or png images.
-The user can also drag one or more images into the window: if the user drags more than one photo, the list below will be filled and the last photo will be uploaded.
+In the file dialog that appears, you can choose jpeg or png images.
+The user can also drag one or more images into the window, in fact if the user drags more than one photo the list below will be filled and the last photo will be uploaded.
 The MainWindow will show up as follows:
 
 
@@ -60,7 +60,7 @@ The viewed images can be **rotated** to the right or to the left through "Tools 
 
 ### Images List
 The **images list** can be used to navigate through the loaded images and can be toggled from "View -> Images list" in the menu bar.
-The image to visualize can be updated through a double click or Enter Key on the thumbnail in the list.
+The image to visualize can be updated through a double click or **Enter** key on the thumbnail in the list.
 
 ### Get Info
 The user can view general information and exif data of the photo displayed in the MainWindow through "View -> Get info" in the menu bar.
