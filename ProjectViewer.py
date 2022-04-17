@@ -56,7 +56,7 @@ class ExifViewer(QDialog):
                 for r, tag in enumerate(self.exif):
                     self.ui.tableWidget1.setItem(r, 0, QTableWidgetItem(tag))
                     self.ui.tableWidget1.setItem(r, 1, QTableWidgetItem(str(self.exif[tag])))
-                # show a message in the window.
+                # show a message in the window due to gps is None.
                 no_gps = QLabel()
                 no_gps.setAlignment(Qt.AlignCenter)
                 no_gps.setText(f"<h1>No GPS map available for this image</h1>")
@@ -122,7 +122,7 @@ class ImageViewer(QMainWindow):
             e.accept()
             for url in e.mimeData().urls():
                 f_name = str(url.toLocalFile())
-                self.load_img(f_name)
+                self.load_image(f_name)
         else:
             e.ignore()
 
@@ -130,7 +130,7 @@ class ImageViewer(QMainWindow):
     def contextMenuEvent(self, event):
         action = self.ui.context_menu.exec_(self.mapToGlobal(event.pos()))
         if action == self.ui.open_context:
-            self.load_img()
+            self.load_image()
         elif action == self.ui.close_context:
             self.close_img()
         elif action == self.ui.close_all_context:
@@ -144,9 +144,9 @@ class ImageViewer(QMainWindow):
         elif action == self.ui.list_context:
             self.toggle_img_list()
 
-    # allow to do every interaction in the window.
+    # it allows to do every interaction in the window.
     def interaction(self):
-        self.ui.action_open.triggered.connect(self.load_img)
+        self.ui.action_open.triggered.connect(self.load_image)
         self.ui.ccw_rotate.triggered.connect(self.left_rotate)
         self.ui.cw_rotate.triggered.connect(self.right_rotate)
         self.ui.close_img.triggered.connect(self.close_img)
@@ -155,9 +155,9 @@ class ImageViewer(QMainWindow):
         self.ui.side_list.triggered.connect(self.toggle_img_list)
         self.ui.list_widget.itemClicked.connect(self.view_img)
 
-    # load an image from file_dialog if is not drag and drop in the window.
-    def load_img(self, f_name=None):
-        # choose f_name from file_dialog if is None.
+    # load an image from file_dialog or through drag and drop event.
+    def load_image(self, f_name=None):
+        # choose f_name from file_dialog if is None, which means if no image is dropped into the window.
         if not f_name:
             file_dialog = QFileDialog()
             options = file_dialog.Options()
@@ -170,7 +170,7 @@ class ImageViewer(QMainWindow):
         # check if f_name is selected, else a warning message is shown.
         if f_name:
             if f_name not in self.model.file_names:
-                # load the f_name and the image in the model and display the image.
+                # load the f_name and the image in the model and display the image in the app.
                 self.model.file_names.append(f_name)
                 self.model.images.append(QtGui.QPixmap(f_name))
                 item = QtWidgets.QListWidgetItem(f_name.split('/')[-1])
@@ -198,7 +198,7 @@ class ImageViewer(QMainWindow):
             self.set_aspect_ratio()
             self.set_tools_enabled()
 
-    # keep aspect ratio with a maximum size of 512 for width/height.
+    # keep aspect ratio with a maximum size of 512 for width or height.
     def set_aspect_ratio(self):
         max_size = 512
         self.ui.image_label.setPixmap(

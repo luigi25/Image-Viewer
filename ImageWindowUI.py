@@ -3,11 +3,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        # MainWindow and its properties.
+        # MainWindow with its properties.
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(820, 550)
+        MainWindow.resize(750, 500)
         MainWindow.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
-        MainWindow.setMinimumSize(QtCore.QSize(820, 550))
+        MainWindow.setMinimumSize(QtCore.QSize(750, 500))
         MainWindow.setWindowIcon(QtGui.QIcon('icons/application-image.png'))
         MainWindow.setAcceptDrops(True)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -20,7 +20,7 @@ class Ui_MainWindow(object):
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
 
-        # label that contains the default image and all images that are subsequently loaded.
+        # image_label that contains the default image and all images that are subsequently loaded.
         self.image_label = QtWidgets.QLabel(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -175,7 +175,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Image Viewer"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Image-Viewer"))
         self.menu_file.setTitle(_translate("MainWindow", "File"))
         self.close_option.setTitle(_translate("MainWindow", "Close image(s)"))
         self.tools.setTitle(_translate("MainWindow", "Tools"))

@@ -3,7 +3,7 @@ import io
 import folium
 
 
-# allow to do the conversion.
+# it allows to do the conversion to degrees.
 def convert_to_degrees(value):
     d = float(value[0])
     m = float(value[1]) / 60.0
@@ -11,7 +11,7 @@ def convert_to_degrees(value):
     return d + m + s
 
 
-# allow calculating latitude, longitude and create the relative map in those coordinates.
+# it allows calculating latitude, longitude and create the relative map in those coordinates.
 def gps_map(gps_exif):
     latitude, longitude = None, None
 
@@ -29,11 +29,12 @@ def gps_map(gps_exif):
         if gps_longitude_ref != 'E':
             longitude = 0 - longitude
 
+    # Google Maps link.
     url = '<a href="https://www.google.com/maps/search/?api=1&query={0},{1}"> Google Maps </a>'.format(
         latitude, longitude)
     # print('url: {}'.format(url))
 
-    # create the map from coordinate.
+    # create the map from coordinates.
     coordinate = (latitude, longitude)
     m = folium.Map(title='GPS Location', zoom_start=18, location=coordinate)
     popup = folium.Popup(f'<h4>For more information go to {url}</h4>', max_width=len('For more information') * 9)
