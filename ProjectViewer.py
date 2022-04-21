@@ -74,7 +74,7 @@ class ExifViewer(QDialog):
             self.ui.gridLayout2.addWidget(no_gps, 0, 0, 1, 1)
 
 
-# ImgViewer class.
+# ImageViewer class.
 class ImageViewer(QMainWindow):
     def __init__(self, model: Model):
         super(ImageViewer, self).__init__()
